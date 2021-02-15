@@ -1,5 +1,17 @@
 package fr.excilys.formation.controller;
 
-public class Controller {
+import fr.excilys.formation.model.Model;
 
+public class Controller {
+	Model model;
+	
+	public Controller() {
+		model = Model.getInstance();
+	}
+	
+	public void update() {
+		model = Model.getInstance();
+	}
+	
+	
 }
