@@ -1,4 +1,4 @@
-package fr.excilys.formation.service;
+package com.excilys.formation.service;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.excilys.formation.model.Company;
-import fr.excilys.formation.model.Computer;
+import com.excilys.formation.model.Company;
+import com.excilys.formation.model.Computer;
 
 public class DAOComputer {
 	private static DBConnection dbConnection;
@@ -136,6 +136,38 @@ public class DAOComputer {
 			String query = "UPDATE computer SET company_id = ? WHERE id = ?;";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, companyID);
+			statement.setInt(2, computerID);
+
+			statement.executeUpdate();
+			status = true;
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return status;
+	}
+
+	public boolean changeComputerIntroduced(int computerID, LocalDate introduced) {
+		boolean status = false;
+		try (Connection connection = dbConnection.openConnection()) {
+			String query = "UPDATE computer SET introduced = ? WHERE id = ?;";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setDate(1, localDateToDate(introduced));
+			statement.setInt(2, computerID);
+
+			statement.executeUpdate();
+			status = true;
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return status;
+	}
+
+	public boolean changeComputerDiscontinued(int computerID, LocalDate discontinued) {
+		boolean status = false;
+		try (Connection connection = dbConnection.openConnection()) {
+			String query = "UPDATE computer SET discontinued = ? WHERE id = ?;";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setDate(1, localDateToDate(discontinued));
 			statement.setInt(2, computerID);
 
 			statement.executeUpdate();

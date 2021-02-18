@@ -1,15 +1,20 @@
-package fr.excilys.formation.model;
+package com.excilys.formation.model;
+
+import static com.excilys.formation.constants.GlobalConstants.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public class Computer {
 	private String name;
 	Company company;
 	private LocalDate introduced, discontinued;
 	private int id;
+	private final static String printFormat = "%4s | %-40s| %-40s| %-14s| %-14s";
+	public final static String HEADER = String.format(printFormat, "ID", "Nom", "Entreprise", "Introduced", "Discontinued");
 
 	public Computer() {
-		name = "toto";
+
 	}
 	public Computer(int id) {
 		this.id = id;
@@ -69,6 +74,22 @@ public class Computer {
 
 	public void setDiscontinued(LocalDate discontinued) {
 		this.discontinued = discontinued;
+	}
+	
+	
+	public String toString() {
+		
+		return String.format(printFormat, getID(), getName(), getCompany().getName(), 
+					localDateToString(Optional.ofNullable(getIntroduced())),
+					localDateToString(Optional.ofNullable(getDiscontinued())));
+	}
+	
+	private String localDateToString(Optional<LocalDate> localDate) {
+		if (localDate.isPresent()) {
+			return localDate.get().format(DATE_FORMAT);
+		} else {
+			return "none";
+		}
 	}
 
 	public boolean equals(Object other) {

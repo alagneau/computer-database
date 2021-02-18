@@ -1,4 +1,4 @@
-package fr.excilys.formation.model;
+package com.excilys.formation.model;
 
 public class Company {
 	private String name;

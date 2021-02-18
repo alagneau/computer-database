@@ -1,12 +1,13 @@
-package fr.excilys.formation.controller;
+package com.excilys.formation.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.excilys.formation.model.Company;
-import fr.excilys.formation.model.Computer;
-import fr.excilys.formation.service.DAOCompany;
-import fr.excilys.formation.service.DAOComputer;
+import com.excilys.formation.model.Company;
+import com.excilys.formation.model.Computer;
+import com.excilys.formation.service.DAOCompany;
+import com.excilys.formation.service.DAOComputer;
 
 public class Controller {
 	private DAOCompany daoCompany;
@@ -60,6 +61,14 @@ public class Controller {
 	
 	public boolean changeComputerCompany(int computerID, int companyID) {
 		return daoComputer.changeComputerCompany(computerID, companyID);
+	}
+	
+	public boolean changeComputerIntroduced(int computerID, LocalDate introduced) {
+		return daoComputer.changeComputerIntroduced(computerID, introduced);
+	}
+	
+	public boolean changeComputerDiscontinued(int computerID, LocalDate discontinued) {
+		return daoComputer.changeComputerIntroduced(computerID, discontinued);
 	}
 	
 	public boolean deleteComputer(int id) {

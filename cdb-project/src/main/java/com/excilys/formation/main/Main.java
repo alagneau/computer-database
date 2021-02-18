@@ -1,10 +1,10 @@
-package fr.excilys.formation.main;
+package com.excilys.formation.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import fr.excilys.formation.view.View;
+import com.excilys.formation.view.View;
 
 public class Main {
 

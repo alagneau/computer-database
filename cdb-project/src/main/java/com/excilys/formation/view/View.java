@@ -1,18 +1,23 @@
-package fr.excilys.formation.view;
+package com.excilys.formation.view;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import fr.excilys.formation.controller.Controller;
-import fr.excilys.formation.model.Company;
-import fr.excilys.formation.model.Computer;
+import com.excilys.formation.controller.Controller;
+import com.excilys.formation.model.Company;
+import com.excilys.formation.model.Computer;
 
 public class View {
 	private Controller controller;
 	private int offset = 0, numberOfRows = 10;
 	private int pageIndex = 0;
 	private Computer computerDetails;
+	private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
 	private enum Page {
 		HOME("0"), COMPUTERS("1"), COMPANIES("2"), DETAIL("3"), CREATE("4"), UPDATE("5"), DELETE("6");
@@ -146,14 +151,13 @@ public class View {
 
 	private void printAllComputers() {
 		List<Computer> computers = null;
-		String format = "%4d %-40s%s%n";
 
 		computers = controller.getComputers(offset, numberOfRows);
 
-		System.out.printf("%-4s %-40s%s%n", "ID", "Nom", "Entreprise");
+		System.out.println(Computer.HEADER);
 
 		for (Computer computer : computers) {
-			System.out.printf(format, computer.getID(), computer.getName(), computer.getCompany().getName());
+			System.out.println(computer.toString());
 		}
 
 		System.out.println("N : Page suivante | P : Page Précédente | A : Accueil");
@@ -310,7 +314,7 @@ public class View {
 			default:
 				if (controller.changeComputerName(computerDetails.getID(), query)) {
 					computerDetails = controller.getComputerByID(computerDetails.getID());
-					pageIndex = 4;
+					pageIndex = 6;
 				} else {
 					System.out.println("Une erreur a été rencontrée..");
 					System.out.println("ID = " + computerDetails.getID() + " nom = " + computerDetails.getName());
@@ -330,10 +334,9 @@ public class View {
 				pageIndex = 1;
 				break;
 			default:
-
 				if (controller.changeComputerCompany(computerDetails.getID(), queryToInt(query))) {
 					computerDetails = controller.getComputerByID(computerDetails.getID());
-					pageIndex = 4;
+					pageIndex = 6;
 				} else {
 					System.out.println("Une erreur a été rencontrée..");
 					pageIndex = 0;
@@ -341,6 +344,36 @@ public class View {
 			}
 			break;
 		case 4:
+			switch (query) {
+			case "":
+				System.out.println("Entrée empty");
+				break;
+			case "A":
+				pageIndex = 0;
+				break;
+			case "R":
+				pageIndex = 1;
+				break;
+			default:
+				Optional<LocalDate> localDate = stringToLocalDate(query);
+				if (localDate.isPresent()) {
+					if (controller.changeComputerName(computerDetails.getID(), query)) {
+						computerDetails = controller.getComputerByID(computerDetails.getID());
+						pageIndex = 6;
+					} else {
+						System.out.println("Une erreur a été rencontrée..");
+						System.out.println("ID = " + computerDetails.getID() + " nom = " + computerDetails.getName());
+						pageIndex = 0;
+					}
+				} else {
+					System.out.println("La date écrite n'est pas au bon format :/");
+				}
+			}
+			break;
+		case 5:
+
+			break;
+		case 6:
 			switch (query) {
 			case "A":
 				actualPage = Page.HOME;
@@ -362,7 +395,7 @@ public class View {
 		case 1:
 			printDetailComputer();
 			System.out.println("Quel est le champ à modifier ?");
-			System.out.println("N : nom | C : Company | R : Retour | A : Accueil");
+			System.out.println("N : Nom | C : Companie | I : Introduced | D : Discontinued | R : Retour | A : Accueil");
 			break;
 		case 2:
 			System.out.println("A : Annuler | R : Retour");
@@ -373,6 +406,14 @@ public class View {
 			System.out.println("Quelle est la nouvelle entreprise pour cet ordinateur ?");
 			break;
 		case 4:
+			System.out.println("A : Annuler | R : Retour");
+			System.out.println("Entrez la nouvelle date d'introduction au format dd-mm-yyyy ?");
+			break;
+		case 5:
+			System.out.println("A : Annuler | R : Retour");
+			System.out.println("Entrez la nouvelle date de départ au format dd-mm-yyyy ?");
+			break;
+		case 6:
 			System.out.println("L'ordinateur a bien été modifié :");
 			printDetailComputer();
 			System.out.println("C : Effectuer un nouveau changement | A : Accueil");
@@ -455,5 +496,15 @@ public class View {
 			printError(query);
 		}
 		return result;
+	}
+
+	private Optional<LocalDate> stringToLocalDate(String query) {
+		LocalDate localDate = null;
+		try {
+			localDate = LocalDate.parse(query, dateFormat);
+		} catch (DateTimeParseException exception) {
+
+		}
+		return Optional.ofNullable(localDate);
 	}
 }

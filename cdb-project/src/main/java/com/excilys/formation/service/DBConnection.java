@@ -1,4 +1,4 @@
-package fr.excilys.formation.service;
+package com.excilys.formation.service;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
