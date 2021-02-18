@@ -9,31 +9,60 @@ import fr.excilys.formation.service.DAOCompany;
 import fr.excilys.formation.service.DAOComputer;
 
 public class Controller {
-	private DAOCompany serviceCompany;
-	private DAOComputer serviceComputer;
+	private DAOCompany daoCompany;
+	private DAOComputer daoComputer;
 	
 	public Controller() {
-		serviceCompany = new DAOCompany();
-		serviceComputer = new DAOComputer();
+		daoCompany = new DAOCompany();
+		daoComputer = new DAOComputer();
 	}
-
+	public int numberOfComputers() {
+		return daoComputer.numberOfComputers();
+	}
+	
+	public int numberOfCompanies() {
+		return daoCompany.numberOfCompanies();
+	}
+	
 	public List<Computer> getComputers(int offset, int rows) {
 		List<Computer> computers = new ArrayList<Computer>();
-		computers = serviceComputer.getAllComputers(offset, rows);
+		computers = daoComputer.getAllComputers(offset, rows);
 		
 		return computers;
 	}
 	
 	public List<Company> getCompanies(int offset, int rows) {
 		List<Company> companies = new ArrayList<Company>();
-		companies = serviceCompany.getAllCompanies(offset, rows);
+		companies = daoCompany.getAllCompanies(offset, rows);
 		
 		return companies;
 	}
 	
 	public Computer getComputerByID(int id) {
-		return serviceComputer.getComputerByID(id);
+		return daoComputer.getComputerByID(id);
 	}
 	
+	public boolean computerExists(int id) {
+		return daoComputer.computerExists(id);
+	}
 	
+	public boolean companyExists(int id) {
+		return daoCompany.companyExists(id);
+	}
+	
+	public int addComputer(Computer computer) {
+		return daoComputer.addComputer(computer);
+	}
+	
+	public boolean changeComputerName(int computerID, String name) {
+		return daoComputer.changeComputerName(computerID, name);
+	}
+	
+	public boolean changeComputerCompany(int computerID, int companyID) {
+		return daoComputer.changeComputerCompany(computerID, companyID);
+	}
+	
+	public boolean deleteComputer(int id) {
+		return daoComputer.deleteComputer(id);
+	}
 }

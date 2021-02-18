@@ -1,51 +1,42 @@
 package fr.excilys.formation.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Computer {
 	private String name;
 	Company company;
-	private Date date;
+	private LocalDate introduced, discontinued;
 	private int id;
 
 	public Computer() {
 		name = "toto";
+	}
+	public Computer(int id) {
+		this.id = id;
 	}
 
 	public Computer(String name) {
 		this.name = name;
 	}
 	
-	public Computer(Date date) {
-		this();
-		this.date = date;
-	}
-	
 	public Computer(int id, String name, Company company) {
 		this(name);
-		this.setCompany(company);
-		this.setID(id);
+		setCompany(company);
+		setID(id);
 	}
-
-	public Computer(String name, Date date) {
-		this(name);
-		this.date = date;
+	
+	public Computer(int id, String name, Company company, LocalDate introduced, LocalDate discontinued) {
+		this(id, name, company);
+		setIntroduced(introduced);
+		setDiscontinued(discontinued);
 	}
-
+	
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
 	}
 
 	public int getID() {
@@ -64,7 +55,32 @@ public class Computer {
 		this.company = company;
 	}
 	
-	public void equals() {
-		
+	public LocalDate getIntroduced() {
+		return introduced;
+	}
+
+	public void setIntroduced(LocalDate introduced) {
+		this.introduced = introduced;
+	}
+
+	public LocalDate getDiscontinued() {
+		return discontinued;
+	}
+
+	public void setDiscontinued(LocalDate discontinued) {
+		this.discontinued = discontinued;
+	}
+
+	public boolean equals(Object other) {
+		if (other == null) return false;
+		if (this == other) return true;
+		if (other instanceof Computer) {
+			return ((Computer) other).equals(other);
+		}
+		return false;
+	}
+	
+	public int hashcode() {
+		return name.hashCode() * company.hashCode() * introduced.hashCode() * discontinued.hashCode();
 	}
 }
