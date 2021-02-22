@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.excilys.formation.controller.Controller;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
+
+import com.excilys.formation.controller.Controller;
 
 public class View {
 	private Controller controller;
@@ -39,7 +40,7 @@ public class View {
 	private Page actualPage = Page.HOME;
 
 	public View() {
-		controller = new Controller();
+		controller = Controller.getInstance();
 		System.out.println("Bienvenue sur MyComputerDatabase.com !\n\n");
 		displayPage();
 	}
@@ -227,11 +228,15 @@ public class View {
 				int id = queryToInt(query);
 				if (controller.companyExists(id)) {
 					computerDetails.setCompany(new Company(id));
-					if ((id = controller.addComputer(computerDetails)) > 0) {
+					try {
+					if ((id = controller.addComputer(computerDetails.getName(), id, null, null)) > 0) {
 						computerDetails.setID(id);
 						pageIndex++;
 					} else
 						System.out.println("L'ordinateur n'a pas peu être ajouté...");
+					} catch (Exception exception) {
+						exception.printStackTrace();
+					}
 				} else {
 					System.out.println("Cette entreprise n'est pas connue...");
 				}

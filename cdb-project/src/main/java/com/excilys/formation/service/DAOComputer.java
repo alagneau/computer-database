@@ -15,9 +15,17 @@ import com.excilys.formation.model.Computer;
 
 public class DAOComputer {
 	private static DBConnection dbConnection;
+	private static DAOComputer daoComputer;
 
 	public DAOComputer() {
 		dbConnection = DBConnection.getInstance();
+	}
+	
+	public static DAOComputer getInstance() {
+		if (daoComputer == null) {
+			daoComputer = new DAOComputer();
+		}
+		return daoComputer;
 	}
 
 	public int numberOfComputers() {
@@ -34,17 +42,19 @@ public class DAOComputer {
 		return value;
 	}
 
-	public List<Computer> getAllComputers(int offset, int numberOfRows) {
+	public List<Computer> getComputers(int offset, int numberOfRows) {
 		List<Computer> computers = new ArrayList<Computer>();
 		try (Connection connection = dbConnection.openConnection()) {
-			String query = "SELECT computer.id, computer.name, company.name as etp "
+			String query = "SELECT computer.id, computer.name, company.name as etp, computer.introduced, computer.discontinued "
 					+ "FROM computer LEFT JOIN company ON computer.company_id=company.id " + "ORDER BY computer.id "
 					+ "LIMIT " + offset + ", " + numberOfRows + ";";
 			ResultSet result = connection.createStatement().executeQuery(query);
 
 			while (result.next()) {
 				Computer computer = new Computer(result.getInt("id"), result.getString("name"),
-						new Company(result.getString("etp")));
+						new Company(result.getString("etp")),
+						dateToLocalDate(result.getDate("introduced")),
+						dateToLocalDate(result.getDate("discontinued")));
 				computers.add(computer);
 			}
 

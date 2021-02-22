@@ -12,11 +12,20 @@ import com.excilys.formation.service.DAOComputer;
 public class Controller {
 	private DAOCompany daoCompany;
 	private DAOComputer daoComputer;
+	private static Controller controller;
 	
-	public Controller() {
+	private Controller() {
 		daoCompany = new DAOCompany();
 		daoComputer = new DAOComputer();
 	}
+	
+	public static Controller getInstance() {
+		if (controller == null) {
+			controller = new Controller();
+		}
+		return controller;
+	}
+	
 	public int numberOfComputers() {
 		return daoComputer.numberOfComputers();
 	}
@@ -27,14 +36,21 @@ public class Controller {
 	
 	public List<Computer> getComputers(int offset, int rows) {
 		List<Computer> computers = new ArrayList<Computer>();
-		computers = daoComputer.getAllComputers(offset, rows);
+		computers = daoComputer.getComputers(offset, rows);
 		
 		return computers;
 	}
 	
 	public List<Company> getCompanies(int offset, int rows) {
 		List<Company> companies = new ArrayList<Company>();
-		companies = daoCompany.getAllCompanies(offset, rows);
+		companies = daoCompany.getCompanies(offset, rows);
+		
+		return companies;
+	}
+	
+	public List<Company> getAllCompanies() {
+		List<Company> companies = new ArrayList<Company>();
+		companies = daoCompany.getAllCompanies();
 		
 		return companies;
 	}
@@ -51,7 +67,11 @@ public class Controller {
 		return daoCompany.companyExists(id);
 	}
 	
-	public int addComputer(Computer computer) {
+	public int addComputer(String name, int companyID, LocalDate introduced, LocalDate discontinued) throws IllegalArgumentException {
+		if ((name == "") || !companyExists(companyID)) {
+			throw new IllegalArgumentException();
+		}
+		Computer computer = new Computer(0, name, new Company(companyID), introduced, discontinued);
 		return daoComputer.addComputer(computer);
 	}
 	

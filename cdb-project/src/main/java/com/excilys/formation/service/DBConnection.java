@@ -5,17 +5,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-	private static DBConnection daoconnection;
+	private static DBConnection dbconnection;
 	private Connection connection;
 	private static final String URL = "jdbc:mysql://localhost/computer-database-db", username = "root", password = "tapaqual";
 
 	private DBConnection() {}
 
 	public static DBConnection getInstance() {
-		if (daoconnection == null) {
-			daoconnection = new DBConnection();
+		if (dbconnection == null) {
+			dbconnection = new DBConnection();
 		}
-		return daoconnection;
+		return dbconnection;
 	}
 
 	public Connection openConnection() {
