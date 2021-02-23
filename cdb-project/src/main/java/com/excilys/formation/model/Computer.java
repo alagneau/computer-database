@@ -14,7 +14,7 @@ public class Computer {
 	public final static String HEADER = String.format(printFormat, "ID", "Nom", "Entreprise", "Introduced", "Discontinued");
 
 	public Computer() {
-
+		this.name = "";
 	}
 	public Computer(int id) {
 		this.id = id;
