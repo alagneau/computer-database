@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.excilys.formation.exception.DBConnectionException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
@@ -28,7 +29,7 @@ public class DAOComputer {
 		return daoComputer;
 	}
 
-	public int numberOfComputers() {
+	public int numberOfComputers() throws DBConnectionException  {
 		int value = 0;
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "SELECT COUNT(id) FROM computer;";
@@ -42,7 +43,7 @@ public class DAOComputer {
 		return value;
 	}
 
-	public List<Computer> getComputers(int offset, int numberOfRows) {
+	public List<Computer> getComputers(int offset, int numberOfRows) throws DBConnectionException  {
 		List<Computer> computers = new ArrayList<Computer>();
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "SELECT computer.id, computer.name, company.name as etp, computer.introduced, computer.discontinued "
@@ -64,7 +65,7 @@ public class DAOComputer {
 		return computers;
 	}
 
-	public Computer getComputerByID(int id) {
+	public Computer getComputerByID(int id) throws DBConnectionException  {
 		Computer computer = null;
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.name AS etp "
@@ -84,7 +85,7 @@ public class DAOComputer {
 		return computer;
 	}
 
-	public boolean computerExists(int id) {
+	public boolean computerExists(int id) throws DBConnectionException  {
 		boolean returnValue = false;
 		try (Connection connection = dbConnection.openConnection()) {
 			ResultSet result = connection.createStatement()
@@ -98,7 +99,7 @@ public class DAOComputer {
 		return returnValue;
 	}
 
-	public int addComputer(Computer computer) {
+	public int addComputer(Computer computer) throws DBConnectionException  {
 		int status = 0;
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "INSERT INTO computer(name, introduced, discontinued, company_id) " + "VALUES (?, ?, ?, ?);";
@@ -122,7 +123,7 @@ public class DAOComputer {
 		return status;
 	}
 
-	public boolean changeComputerName(int computerID, String name) {
+	public boolean changeComputerName(int computerID, String name) throws DBConnectionException  {
 		boolean status = false;
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "UPDATE computer SET name = ? WHERE id = ?;";
@@ -138,7 +139,7 @@ public class DAOComputer {
 		return status;
 	}
 
-	public boolean changeComputerCompany(int computerID, int companyID) {
+	public boolean changeComputerCompany(int computerID, int companyID) throws DBConnectionException  {
 		boolean status = false;
 		if (companyID <= 0)
 			return false;
@@ -156,7 +157,7 @@ public class DAOComputer {
 		return status;
 	}
 
-	public boolean changeComputerIntroduced(int computerID, LocalDate introduced) {
+	public boolean changeComputerIntroduced(int computerID, LocalDate introduced) throws DBConnectionException  {
 		boolean status = false;
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "UPDATE computer SET introduced = ? WHERE id = ?;";
@@ -172,7 +173,7 @@ public class DAOComputer {
 		return status;
 	}
 
-	public boolean changeComputerDiscontinued(int computerID, LocalDate discontinued) {
+	public boolean changeComputerDiscontinued(int computerID, LocalDate discontinued) throws DBConnectionException  {
 		boolean status = false;
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "UPDATE computer SET discontinued = ? WHERE id = ?;";
@@ -188,7 +189,7 @@ public class DAOComputer {
 		return status;
 	}
 
-	public boolean deleteComputer(int id) {
+	public boolean deleteComputer(int id) throws DBConnectionException {
 		boolean status = false;
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "DELETE FROM computer WHERE id = ?;";

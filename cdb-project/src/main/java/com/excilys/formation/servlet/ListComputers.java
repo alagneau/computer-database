@@ -20,7 +20,7 @@ import com.excilys.formation.model.Computer;
 @WebServlet("/ListComputers")
 public class ListComputers extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	List<Computer> listComputers = new ArrayList<Computer>();
+	List<Computer> listComputers = new ArrayList<Computer>(); 
 	private Controller controller;
 	private int numberOfRows = 10, offset = 0, maxComputer = 0;
 	private static Logger logger = LoggerFactory.getLogger(ListComputers.class);

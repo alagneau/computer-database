@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.excilys.formation.exception.DBConnectionException;
 import com.excilys.formation.model.Company;
 
 public class DAOCompany {
@@ -15,7 +16,7 @@ public class DAOCompany {
 		dbConnection = DBConnection.getInstance();
 	}
 
-	public int numberOfCompanies() {
+	public int numberOfCompanies() throws DBConnectionException {
 		int value = 0;
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "SELECT COUNT(id) FROM company;";
@@ -29,7 +30,7 @@ public class DAOCompany {
 		return value;
 	}
 
-	public List<Company> getCompanies(int offset, int numberOfRows) {
+	public List<Company> getCompanies(int offset, int numberOfRows) throws DBConnectionException  {
 		List<Company> companies = new ArrayList<Company>();
 		try (Connection connection = dbConnection.openConnection()) {
 
@@ -46,7 +47,7 @@ public class DAOCompany {
 		return companies;
 	}
 
-	public List<Company> getAllCompanies() {
+	public List<Company> getAllCompanies() throws DBConnectionException  {
 		List<Company> companies = new ArrayList<Company>();
 		try (Connection connection = dbConnection.openConnection()) {
 			String query = "SELECT id, name FROM company;";
@@ -62,7 +63,7 @@ public class DAOCompany {
 		return companies;
 	}
 
-	public boolean companyExists(int id) {
+	public boolean companyExists(int id) throws DBConnectionException  {
 		boolean returnValue = false;
 		try (Connection connection = dbConnection.openConnection()) {
 			ResultSet result = connection.createStatement()
