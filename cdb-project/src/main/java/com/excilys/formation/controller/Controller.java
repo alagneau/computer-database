@@ -27,67 +27,67 @@ public class Controller {
 	}
 	
 	public int numberOfComputers() {
-		return daoComputer.numberOfComputers();
+		return daoComputer.count();
 	}
 	
 	public int numberOfCompanies() {
-		return daoCompany.numberOfCompanies();
+		return daoCompany.count();
 	}
 	
 	public List<Computer> getComputers(int offset, int rows) {
 		List<Computer> computers = new ArrayList<Computer>();
-		computers = daoComputer.getComputers(offset, rows);
+		computers = daoComputer.getRange(offset, rows);
 		
 		return computers;
 	}
 	
 	public List<Company> getCompanies(int offset, int rows) {
 		List<Company> companies = new ArrayList<Company>();
-		companies = daoCompany.getCompanies(offset, rows);
+		companies = daoCompany.getRange(offset, rows);
 		
 		return companies;
 	}
 	
 	public List<Company> getAllCompanies() {
 		List<Company> companies = new ArrayList<Company>();
-		companies = daoCompany.getAllCompanies();
+		companies = daoCompany.getAll();
 		
 		return companies;
 	}
 	
 	public Computer getComputerByID(int id) {
-		return daoComputer.getComputerByID(id);
+		return daoComputer.getByID(id);
 	}
 	
 	public boolean computerExists(int id) {
-		return daoComputer.computerExists(id);
+		return daoComputer.exists(id);
 	}
 	
 	public boolean companyExists(int id) {
-		return daoCompany.companyExists(id);
+		return daoCompany.exists(id);
 	}
 	
 	public int addComputer(Computer computer) {
-		return daoComputer.addComputer(computer);
+		return daoComputer.add(computer);
 	}
 	
 	public boolean changeComputerName(int computerID, String name) {
-		return daoComputer.changeComputerName(computerID, name);
+		return daoComputer.updateName(computerID, name);
 	}
 	
 	public boolean changeComputerCompany(int computerID, int companyID) {
-		return daoComputer.changeComputerCompany(computerID, companyID);
+		return daoComputer.updateCompany(computerID, companyID);
 	}
 	
 	public boolean changeComputerIntroduced(int computerID, LocalDate introduced) {
-		return daoComputer.changeComputerIntroduced(computerID, introduced);
+		return daoComputer.updateIntroduced(computerID, introduced);
 	}
 	
 	public boolean changeComputerDiscontinued(int computerID, LocalDate discontinued) {
-		return daoComputer.changeComputerIntroduced(computerID, discontinued);
+		return daoComputer.updateIntroduced(computerID, discontinued);
 	}
 	
 	public boolean deleteComputer(int id) {
-		return daoComputer.deleteComputer(id);
+		return daoComputer.delete(id);
 	}
 }
