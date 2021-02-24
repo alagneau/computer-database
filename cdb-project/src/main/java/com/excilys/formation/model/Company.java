@@ -1,36 +1,42 @@
 package com.excilys.formation.model;
 
+import com.excilys.formation.exception.ArgumentException;
+import com.excilys.formation.validator.CompanyValidator;
+
 public class Company {
-	private String name;
-	private int id;
+	private final int id;
+	private final String name;
 	
-	public Company(int id) {
-		this.setID(id);
-	}
-	
-	public Company(String name) {
-		this.setName(name);
-	}
-	
-	public Company(int id, String name) {
-		this(id);
-		this.name = name;
+	private Company(CompanyBuilder builder) {
+		this.id = builder.id;
+		this.name = builder.name;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public int getID() {
 		return id;
 	}
-
-	public void setID(int id) {
-		this.id = id;
+	
+	public static class CompanyBuilder{
+		private final int id;
+		private String name;
+		
+		public CompanyBuilder(int id) {
+			this.id = id;
+		}
+		public CompanyBuilder name(String name) {
+			this.name = name;
+			return this;
+		}
+		
+		public Company build() throws ArgumentException {
+			Company company = new Company(this);
+			//CompanyValidator.validCompany(company);
+			return company;
+		}
 	}
 
 }

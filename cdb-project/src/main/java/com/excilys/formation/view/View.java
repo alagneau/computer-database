@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.excilys.formation.controller.Controller;
+import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
-
-import com.excilys.formation.controller.Controller;
 
 public class View {
 	private Controller controller;
@@ -213,7 +213,11 @@ public class View {
 				actualPage = Page.HOME;
 				break;
 			}
-			computerDetails = new Computer(query);
+			try {
+				computerDetails = new Computer.ComputerBuilder(query).build();
+			} catch (ArgumentException exception) {
+				System.out.println(exception.getMessage());
+			}
 			pageIndex++;
 			break;
 		case 1:
@@ -227,15 +231,14 @@ public class View {
 			default:
 				int id = queryToInt(query);
 				if (controller.companyExists(id)) {
-					computerDetails.setCompany(new Company(id));
 					try {
-					if ((id = controller.addComputer(computerDetails.getName(), id, null, null)) > 0) {
-						computerDetails.setID(id);
-						pageIndex++;
-					} else
-						System.out.println("L'ordinateur n'a pas peu être ajouté...");
-					} catch (Exception exception) {
-						exception.printStackTrace();
+						computerDetails = new Computer.ComputerBuilder(computerDetails.getName()).id(id).build();
+						if ((id = controller.addComputer(computerDetails)) > 0) {
+							pageIndex++;
+						} else
+							System.out.println("L'ordinateur n'a pas peu être ajouté...");
+					} catch (ArgumentException exception) {
+						System.out.println(exception.getMessage());
 					}
 				} else {
 					System.out.println("Cette entreprise n'est pas connue...");

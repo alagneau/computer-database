@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
@@ -20,7 +21,7 @@ public class DAOComputer {
 	public DAOComputer() {
 		dbConnection = DBConnection.getInstance();
 	}
-	
+
 	public static DAOComputer getInstance() {
 		if (daoComputer == null) {
 			daoComputer = new DAOComputer();
@@ -34,7 +35,7 @@ public class DAOComputer {
 			String query = "SELECT COUNT(id) FROM computer;";
 			ResultSet result = connection.createStatement().executeQuery(query);
 			result.next();
-			
+
 			value = result.getInt(1);
 		} catch (SQLException sqlException) {
 			sqlException.printStackTrace();
@@ -45,17 +46,24 @@ public class DAOComputer {
 	public List<Computer> getComputers(int offset, int numberOfRows) {
 		List<Computer> computers = new ArrayList<Computer>();
 		try (Connection connection = dbConnection.openConnection()) {
-			String query = "SELECT computer.id, computer.name, company.name as etp, computer.introduced, computer.discontinued "
+			String query = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id as \"companyID\", company.name as \"companyName\" "
 					+ "FROM computer LEFT JOIN company ON computer.company_id=company.id " + "ORDER BY computer.id "
 					+ "LIMIT " + offset + ", " + numberOfRows + ";";
 			ResultSet result = connection.createStatement().executeQuery(query);
 
 			while (result.next()) {
-				Computer computer = new Computer(result.getInt("id"), result.getString("name"),
-						new Company(result.getString("etp")),
-						dateToLocalDate(result.getDate("introduced")),
-						dateToLocalDate(result.getDate("discontinued")));
-				computers.add(computer);
+				try {
+					Computer computer = new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
+							.company(new Company.CompanyBuilder(result.getInt("companyID"))
+									.name(result.getString("companyName"))
+									.build())
+							.introduced(dateToLocalDate(result.getDate("introduced")))
+							.discontinued(dateToLocalDate(result.getDate("introduced")))
+							.build();
+					computers.add(computer);
+				} catch (ArgumentException exception) {
+					System.out.println(exception.getMessage());
+				}
 			}
 
 		} catch (SQLException sqlException) {
@@ -67,16 +75,24 @@ public class DAOComputer {
 	public Computer getComputerByID(int id) {
 		Computer computer = null;
 		try (Connection connection = dbConnection.openConnection()) {
-			String query = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.name AS etp "
+			String query = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id as \"companyID\", company.name as \"companyName\" "
 					+ "FROM computer INNER JOIN company ON computer.company_id=company.id " + "WHERE computer.id=" + id
 					+ ";";
 			ResultSet result = connection.createStatement().executeQuery(query);
 
 			if (result.next()) {
-				LocalDate introduced = dateToLocalDate(result.getDate("introduced"));
-				LocalDate discontinued = dateToLocalDate(result.getDate("discontinued"));
-				computer = new Computer(result.getInt("id"), result.getString("name"),
-						new Company(result.getString("etp")), introduced, discontinued);
+				
+				try {
+					computer = new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
+							.company(new Company.CompanyBuilder(result.getInt("companyID"))
+									.name(result.getString("companyName"))
+									.build())
+							.introduced(dateToLocalDate(result.getDate("introduced")))
+							.discontinued(dateToLocalDate(result.getDate("introduced")))
+							.build();
+				} catch(ArgumentException exception) {
+					System.out.println(exception.getMessage());
+				}
 			}
 		} catch (SQLException sqlException) {
 			sqlException.printStackTrace();
