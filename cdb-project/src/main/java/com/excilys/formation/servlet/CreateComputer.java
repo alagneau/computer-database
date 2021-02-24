@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.formation.constants.GlobalConstants;
 import com.excilys.formation.controller.Controller;
+import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.model.Company;
+import com.excilys.formation.model.Computer;
 
 @WebServlet("/CreateComputer")
 public class CreateComputer extends HttpServlet {
@@ -39,12 +41,15 @@ public class CreateComputer extends HttpServlet {
 		
 		
 		try {
-			controller.addComputer(request.getParameter("nom"),
-								Integer.parseInt(request.getParameter("select-company")),
-								GlobalConstants.StringToLocalDate(request.getParameter("introduced")),
-								GlobalConstants.StringToLocalDate(request.getParameter("discontinued")));
+			Company company = new Company.CompanyBuilder(Integer.parseInt(request.getParameter("select-company"))).build();
+			Computer computer = new Computer.ComputerBuilder(request.getParameter("nom"))
+											.company(company)
+											.introduced(GlobalConstants.StringToLocalDate(request.getParameter("introduced")))
+											.discontinued(GlobalConstants.StringToLocalDate(request.getParameter("discontinued")))
+											.build();
+			controller.addComputer(computer);
 			this.getServletContext().getRequestDispatcher("/WEB-INF/validationComputer.jsp").forward(request, response);
-		} catch (Exception exception) {
+		} catch (ArgumentException exception) {
 			exception.printStackTrace();
 			doGet(request, response);
 		}

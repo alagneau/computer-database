@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.excilys.formation.exception.DBConnectionException;
+import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.model.Company;
 
 public class DAOCompany {
@@ -35,10 +36,15 @@ public class DAOCompany {
 		try (Connection connection = dbConnection.openConnection()) {
 
 			ResultSet result = connection.createStatement()
-					.executeQuery("SELECT name FROM company LIMIT " + offset + ", " + numberOfRows + ";");
+					.executeQuery("SELECT id, name FROM company LIMIT " + offset + ", " + numberOfRows + ";");
 
 			while (result.next()) {
-				companies.add(new Company(result.getString("name")));
+				try {
+					companies.add(new Company.CompanyBuilder(result.getInt("id")).name(result.getString("name"))
+											.build());
+				} catch (ArgumentException exception) {
+					System.out.println(exception.getMessage());
+				}
 			}
 
 		} catch (SQLException sqlException) {
@@ -54,7 +60,12 @@ public class DAOCompany {
 			ResultSet result = connection.createStatement().executeQuery(query);
 			
 			while (result.next()) {
-				companies.add(new Company(result.getInt("id"), result.getString("name")));
+				try {
+					companies.add(new Company.CompanyBuilder(result.getInt("id")).name(result.getString("name"))
+											.build());
+				} catch (ArgumentException exception) {
+					System.out.println(exception.getMessage());
+				}
 			}
 			
 		} catch (SQLException sqlException) {

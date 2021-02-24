@@ -1,107 +1,94 @@
 package com.excilys.formation.model;
 
-import static com.excilys.formation.constants.GlobalConstants.*;
+import static com.excilys.formation.constants.GlobalConstants.DATE_FORMAT;
 
 import java.time.LocalDate;
-import java.util.Optional;
+
+import com.excilys.formation.exception.ArgumentException;
+import com.excilys.formation.validator.ComputerValidator;
 
 public class Computer {
-	private String name;
-	Company company;
-	private LocalDate introduced, discontinued;
-	private int id;
+	private final int id;
+	private final String name;
+	private final Company company;
+	private final LocalDate introduced, discontinued;
+	
 	private final static String printFormat = "%4s | %-40s| %-40s| %-14s| %-14s";
 	public final static String HEADER = String.format(printFormat, "ID", "Nom", "Entreprise", "Introduced", "Discontinued");
 
-	public Computer() {
-		this.name = "";
-	}
-	public Computer(int id) {
-		this.id = id;
-	}
-
-	public Computer(String name) {
-		this.name = name;
-	}
-	
-	public Computer(int id, String name, Company company) {
-		this(name);
-		setCompany(company);
-		setID(id);
-	}
-	
-	public Computer(int id, String name, Company company, LocalDate introduced, LocalDate discontinued) {
-		this(id, name, company);
-		setIntroduced(introduced);
-		setDiscontinued(discontinued);
+	private Computer(ComputerBuilder builder) {
+		this.id = builder.id;
+		this.name = builder.name;
+		this.company = builder.company;
+		this.introduced = builder.introduced;
+		this.discontinued = builder.discontinued;
 	}
 	
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public int getID() {
 		return id;
 	}
 
-	public void setID(int id) {
-		this.id = id;
-	}
-
 	public Company getCompany() {
 		return company;
-	}
-
-	public void setCompany(Company company) {
-		this.company = company;
 	}
 	
 	public LocalDate getIntroduced() {
 		return introduced;
 	}
 
-	public void setIntroduced(LocalDate introduced) {
-		this.introduced = introduced;
-	}
-
 	public LocalDate getDiscontinued() {
 		return discontinued;
 	}
-
-	public void setDiscontinued(LocalDate discontinued) {
-		this.discontinued = discontinued;
-	}
 	
-	
+	@Override
 	public String toString() {
 		
 		return String.format(printFormat, getID(), getName(), getCompany().getName(), 
-					localDateToString(Optional.ofNullable(getIntroduced())),
-					localDateToString(Optional.ofNullable(getDiscontinued())));
+					localDateToString(getIntroduced()),
+					localDateToString(getDiscontinued()));
 	}
 	
-	private String localDateToString(Optional<LocalDate> localDate) {
-		if (localDate.isPresent()) {
-			return localDate.get().format(DATE_FORMAT);
+	public static class ComputerBuilder {
+		private final String name;
+		private int id;
+		private Company company;
+		private LocalDate introduced, discontinued;
+		
+		public ComputerBuilder(String name) {
+			this.name = name;
+		}
+		public ComputerBuilder id(int id) {
+			this.id = id;
+			return this;
+		}
+		public ComputerBuilder company(Company company) {
+			this.company = company;
+			return this;
+		}
+		public ComputerBuilder introduced(LocalDate introduced) {
+			this.introduced = introduced;
+			return this;
+		}
+		public ComputerBuilder discontinued(LocalDate discontinued) {
+			this.discontinued = discontinued;
+			return this;
+		}
+		public Computer build() throws ArgumentException {
+			Computer computer = new Computer(this);
+			ComputerValidator.validComputer(computer);
+			return computer;
+		}
+	}
+	
+	private String localDateToString(LocalDate localDate) {
+		if (localDate != null) {
+			return localDate.format(DATE_FORMAT);
 		} else {
 			return "none";
 		}
-	}
-
-	public boolean equals(Object other) {
-		if (other == null) return false;
-		if (this == other) return true;
-		if (other instanceof Computer) {
-			return ((Computer) other).equals(other);
-		}
-		return false;
-	}
-	
-	public int hashcode() {
-		return name.hashCode() * company.hashCode() * introduced.hashCode() * discontinued.hashCode();
 	}
 }

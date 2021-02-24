@@ -67,11 +67,7 @@ public class Controller {
 		return daoCompany.companyExists(id);
 	}
 	
-	public int addComputer(String name, int companyID, LocalDate introduced, LocalDate discontinued) throws IllegalArgumentException {
-		if ((name == "") || !companyExists(companyID)) {
-			throw new IllegalArgumentException();
-		}
-		Computer computer = new Computer(0, name, new Company(companyID), introduced, discontinued);
+	public int addComputer(Computer computer) {
 		return daoComputer.addComputer(computer);
 	}
 	
