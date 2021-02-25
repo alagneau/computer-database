@@ -1,27 +1,30 @@
 package com.excilys.formation.service;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.excilys.formation.exception.DBConnectionException;
 import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.model.Company;
 
 public class DAOCompany {
 	private static DBConnection dbConnection;
+	private final String COUNT = "SELECT COUNT(id) FROM company;",
+						GET_RANGE = "SELECT id, name FROM company LIMIT ?, ?;",
+						GET_ALL = "SELECT id, name FROM company;",
+						EXISTS = "SELECT COUNT(id) FROM company WHERE id=?;";
 
 	public DAOCompany() {
 		dbConnection = DBConnection.getInstance();
 	}
 
-	public int numberOfCompanies() throws DBConnectionException {
+	public int count() {
 		int value = 0;
 		try (Connection connection = dbConnection.openConnection()) {
-			String query = "SELECT COUNT(id) FROM company;";
-			ResultSet result = connection.createStatement().executeQuery(query);
+			ResultSet result = connection.createStatement().executeQuery(COUNT);
 			result.next();
 
 			value = result.getInt(1);
@@ -31,12 +34,14 @@ public class DAOCompany {
 		return value;
 	}
 
-	public List<Company> getCompanies(int offset, int numberOfRows) throws DBConnectionException  {
+	public List<Company> getRange(int offset, int numberOfRows) {
 		List<Company> companies = new ArrayList<Company>();
 		try (Connection connection = dbConnection.openConnection()) {
 
-			ResultSet result = connection.createStatement()
-					.executeQuery("SELECT id, name FROM company LIMIT " + offset + ", " + numberOfRows + ";");
+			PreparedStatement statement = connection.prepareStatement(GET_RANGE);
+			statement.setInt(1, offset);
+			statement.setInt(2, numberOfRows);
+			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
 				try {
@@ -53,11 +58,10 @@ public class DAOCompany {
 		return companies;
 	}
 
-	public List<Company> getAllCompanies() throws DBConnectionException  {
+	public List<Company> getAll() {
 		List<Company> companies = new ArrayList<Company>();
 		try (Connection connection = dbConnection.openConnection()) {
-			String query = "SELECT id, name FROM company;";
-			ResultSet result = connection.createStatement().executeQuery(query);
+			ResultSet result = connection.createStatement().executeQuery(GET_ALL);
 			
 			while (result.next()) {
 				try {
@@ -74,11 +78,13 @@ public class DAOCompany {
 		return companies;
 	}
 
-	public boolean companyExists(int id) throws DBConnectionException  {
+	public boolean exists(int id) {
 		boolean returnValue = false;
 		try (Connection connection = dbConnection.openConnection()) {
-			ResultSet result = connection.createStatement()
-					.executeQuery("SELECT COUNT(id) FROM company WHERE id=" + id + ";");
+			PreparedStatement statement = connection.prepareStatement(EXISTS);
+			statement.setInt(1, id);
+			ResultSet result = statement.executeQuery();
+
 			result.next();
 
 			returnValue = (result.getInt(1) > 0) ? true : false;
