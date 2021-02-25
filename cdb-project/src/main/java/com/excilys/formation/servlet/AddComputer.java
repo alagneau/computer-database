@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,13 +13,12 @@ import com.excilys.formation.constants.GlobalConstants;
 import com.excilys.formation.controller.Controller;
 import com.excilys.formation.model.Company;
 
-@WebServlet("/CreateComputer")
-public class CreateComputer extends HttpServlet {
+public class AddComputer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Controller controller;
 	private List<Company> companies = new ArrayList<Company>();
 
-	public CreateComputer() {
+	public AddComputer() {
 		super();
 		controller = Controller.getInstance();
 	}
@@ -31,7 +29,7 @@ public class CreateComputer extends HttpServlet {
 		
 		request.setAttribute("companies", companies);
 		
-		this.getServletContext().getRequestDispatcher("/WEB-INF/createComputer.jsp").forward(request, response);
+		this.getServletContext().getRequestDispatcher("/WEB-INF/views/addComputer.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

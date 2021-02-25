@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import com.excilys.formation.controller.Controller;
 import com.excilys.formation.model.Computer;
 
-@WebServlet("/ListComputers")
 public class ListComputers extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	List<Computer> listComputers = new ArrayList<Computer>();
 	private Controller controller;
 	private int numberOfRows = 10, offset = 0, maxComputer = 0;
+	private String searchValue = "";
 	private static Logger logger = LoggerFactory.getLogger(ListComputers.class);
 
 	public ListComputers() {
@@ -33,8 +32,8 @@ public class ListComputers extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		changePageIndex(request.getParameter("changePageIndex"));
-		changeNumberOfRows(request.getParameter("changeNumberOfRows"));
+		changePageIndex(request.getParameter("pageIndex"));
+		changeNumberOfRows(request.getParameter("numberOfRows"));
 		
 		maxComputer = controller.numberOfComputers();
 
@@ -58,12 +57,12 @@ public class ListComputers extends HttpServlet {
 		listComputers = controller.getComputers(offset, numberOfRows);
 		request.setAttribute("listComputers", listComputers);
 		request.setAttribute("indiceComputer", offset);
-		request.setAttribute("maxComputer", maxComputer);
+		request.setAttribute("maxComputers", maxComputer);
 		request.setAttribute("numberOfRows", numberOfRows);
-		request.setAttribute("indexPage", pageIndex());
+		request.setAttribute("pageIndex", pageIndex());
 		request.setAttribute("maxPage", maxPage());
 
-		this.getServletContext().getRequestDispatcher("/WEB-INF/listComputers.jsp").forward(request, response);
+		this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -77,7 +76,7 @@ public class ListComputers extends HttpServlet {
 	}
 	
 	private int maxPage() {
-		return (maxComputer+1) / numberOfRows;
+		return (maxComputer-1) / numberOfRows + 1;
 	}
 	
 	private void changeNumberOfRows(String value) {
