@@ -73,7 +73,7 @@ public class DAOComputer {
 									.name(result.getString("companyName"))
 									.build())
 							.introduced(dateToLocalDate(result.getDate("introduced")))
-							.discontinued(dateToLocalDate(result.getDate("introduced")))
+							.discontinued(dateToLocalDate(result.getDate("discontinued")))
 							.build();
 					computers.add(computer);
 				} catch (ArgumentException exception) {
