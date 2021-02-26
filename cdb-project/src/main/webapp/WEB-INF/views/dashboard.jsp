@@ -20,7 +20,7 @@
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                <c:out value="${ maxComputers } Computers found"/>
+                <c:out value="${ maxComputers } Computers found ${maxPage}"/>
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
@@ -130,9 +130,9 @@
 	        
 	        <div class="btn-group btn-group-sm pull-right" role="group" >
 	        	<form method="get" action="dashboard">
-					<input type="button" class="btn btn-default" name="testons" value="10" onclick="submit">
-					<input type="button" class="btn btn-default" name="testons" value="20" onclick="submit">
-					<input type="button" class="btn btn-default" name="testons" value="30" onclick="submit">
+					<input type="submit" class="btn btn-default" name="numberOfValues" value="10">
+					<input type="submit" class="btn btn-default" name="numberOfValues" value="20">
+					<input type="submit" class="btn btn-default" name="numberOfValues" value="30">
 				</form>
 	        </div>
         </div>

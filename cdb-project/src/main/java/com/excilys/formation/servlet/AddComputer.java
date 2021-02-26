@@ -2,6 +2,7 @@ package com.excilys.formation.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -35,18 +36,19 @@ public class AddComputer extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		
 		try {
-			controller.addComputer(request.getParameter("nom"),
-								Integer.parseInt(request.getParameter("select-company")),
+			
+			controller.addComputer(request.getParameter("computerName"),
+								Integer.parseInt(request.getParameter("companyId")),
 								GlobalConstants.StringToLocalDate(request.getParameter("introduced")),
 								GlobalConstants.StringToLocalDate(request.getParameter("discontinued")));
-			this.getServletContext().getRequestDispatcher("/WEB-INF/validationComputer.jsp").forward(request, response);
+			
+			 
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			doGet(request, response);
+			
 		}
-		
+		doGet(request, response);
 	}
 
 }
