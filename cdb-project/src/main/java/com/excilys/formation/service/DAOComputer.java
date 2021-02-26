@@ -139,7 +139,6 @@ public class DAOComputer {
 			statement.setDate(3, localDateToDate(computer.getDiscontinued()));
 			statement.setInt(4, computer.getCompany().getID());
 
-			System.out.println("company id = " + computer.getCompany().getID());
 			statement.executeUpdate();
 			ResultSet result = statement.getGeneratedKeys();
 			result.next();

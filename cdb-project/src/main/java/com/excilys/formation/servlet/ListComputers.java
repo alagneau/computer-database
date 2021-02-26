@@ -1,28 +1,23 @@
 package com.excilys.formation.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.formation.controller.Controller;
 import com.excilys.formation.model.Computer;
+import com.excilys.formation.model.ListPage;
 
-@WebServlet("/ListComputers")
 public class ListComputers extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	List<Computer> listComputers = new ArrayList<Computer>();
 	private Controller controller;
-	private int numberOfRows = 10, offset = 0, maxComputer = 0;
 	private static Logger logger = LoggerFactory.getLogger(ListComputers.class);
 
 	public ListComputers() {
@@ -32,38 +27,26 @@ public class ListComputers extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		changePageIndex(request.getParameter("changePageIndex"));
-		changeNumberOfRows(request.getParameter("changeNumberOfRows"));
 		
-		maxComputer = controller.numberOfComputers();
-
-		Optional<String> switchPage = Optional.ofNullable((String)request.getParameter("switchPage"));
+		HttpSession session = request.getSession();
 		
-		if (switchPage.isPresent()) {
-			switch(switchPage.get()) {
-			case "Precedent":
-				offset = offset - numberOfRows;
-				offset = (offset < 0) ? maxComputer + offset : offset;
-				logger.info("Affichage de la page précédente");
-				break;
-			case "Suivant":
-				offset = offset + numberOfRows;
-				offset = (offset >= maxComputer) ? 0 : offset;
-				logger.info("Affichage de la page suivante");
-				break;
-			}
-		}
+		ListPage<Computer> listPage = getPage(session);
 
-		listComputers = controller.getComputers(offset, numberOfRows);
-		request.setAttribute("listComputers", listComputers);
-		request.setAttribute("indiceComputer", offset);
-		request.setAttribute("maxComputer", maxComputer);
-		request.setAttribute("numberOfRows", numberOfRows);
-		request.setAttribute("indexPage", pageIndex());
-		request.setAttribute("maxPage", maxPage());
+		int maxComputers = controller.numberOfComputers();
+		int numberOfValues = getIntParameter(request.getParameter("numberOfValues"));
+		listPage.setMaxComputers(maxComputers);
+		
+		listPage.changePage(getIntParameter(request.getParameter("pageIndex")));
+		listPage.changeNumberOfValues(numberOfValues);
 
-		this.getServletContext().getRequestDispatcher("/WEB-INF/listComputers.jsp").forward(request, response);
+		listPage.setValues(controller.getComputers(listPage.getOffset(), listPage.getNumberOfValues()));
+		request.setAttribute("listComputers", listPage.getValues());
+		request.setAttribute("maxComputers", maxComputers);
+		request.setAttribute("numberOfValues", numberOfValues);
+		request.setAttribute("pageIndex",listPage.getIndex());
+		request.setAttribute("maxPage", listPage.getMaxPageValue());
+
+		this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -72,27 +55,25 @@ public class ListComputers extends HttpServlet {
 		doGet(request, response);
 	}
 	
-	private int pageIndex() {
-		return offset / numberOfRows + 1;
-	}
-	
-	private int maxPage() {
-		return (maxComputer+1) / numberOfRows;
-	}
-	
-	private void changeNumberOfRows(String value) {
-		int newRows = 0;
-		if (value != null) {
-			newRows = Integer.parseInt(value);
+	private ListPage<Computer> getPage(HttpSession session) {
+		ListPage<Computer> listPage = null;
+		try {
+			listPage = (ListPage<Computer>) session.getAttribute("listPage");
+		} catch(ClassCastException exception) {
+			logger.error(exception.getMessage());
 		}
-		if (newRows > 0 && newRows <= 50) {
-			numberOfRows = newRows;
+		if (listPage == null) {
+			listPage = new ListPage.ListPageBuilder<Computer>().index(1).numberOfValues(10).build();
 		}
+		
+		return listPage;
 	}
 	
-	private void changePageIndex(String value) {
-		if (value != null) {
-			offset = (Integer.parseInt(value)-1) * numberOfRows;
+	private int getIntParameter(String name) {
+		try {
+			return Integer.parseInt(name);
+		} catch (Exception exception) {
+			return -1;
 		}
 	}
 

@@ -24,8 +24,8 @@
 		</select>
 		</p>
 		
-		<p>Date d'introduction : <input type="date" name="introduced"></p>
-		<p>Date de départ : <input type="date" name="discontinued"></p>
+		<p>Date d'introduction : <input type="date" name="introduced" value=""></p>
+		<p>Date de départ : <input type="date" name="discontinued" value=""></p>
 		
 	
 		<input type="submit" value="Valider">

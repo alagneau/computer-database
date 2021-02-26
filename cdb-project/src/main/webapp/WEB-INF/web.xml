@@ -26,7 +26,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>ListComputers</servlet-name>
-    <url-pattern>/listComputers</url-pattern>
+    <url-pattern>/dashboard</url-pattern>
   </servlet-mapping>
   
   <servlet>
@@ -39,12 +39,12 @@
   </servlet-mapping>
   
   <servlet>
-    <servlet-name>CreateComputer</servlet-name>
-    <servlet-class>com.excilys.formation.servlet.CreateComputer</servlet-class>
+    <servlet-name>AddComputer</servlet-name>
+    <servlet-class>com.excilys.formation.servlet.AddComputer</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>CreateComputer</servlet-name>
-    <url-pattern>/createComputer</url-pattern>
+    <servlet-name>AddComputer</servlet-name>
+    <url-pattern>/addComputer</url-pattern>
   </servlet-mapping>
   
   
