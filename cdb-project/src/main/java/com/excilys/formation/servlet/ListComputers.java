@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.excilys.formation.controller.Controller;
 import com.excilys.formation.dto.mapper.ComputerDTOMapper;
 import com.excilys.formation.dto.model.ComputerDTOViewDashboard;
+import com.excilys.formation.exception.DatabaseAccessException;
 import com.excilys.formation.model.Computer;
 import com.excilys.formation.model.ListPage;
 
@@ -35,15 +36,15 @@ public class ListComputers extends HttpServlet {
 		HttpSession session = request.getSession();
 
 		ListPage<Computer> listPage = getPage(session);
-
-		int maxComputers = controller.numberOfComputers();
-		int numberOfValues = getIntParameter(request.getParameter("numberOfValues"));
-		listPage.setMaxComputers(maxComputers);
-
-		listPage.changePage(getIntParameter(request.getParameter("pageIndex")));
-		listPage.changeNumberOfValues(numberOfValues);
-
-		listPage.setValues(controller.getComputers(listPage.getOffset(), listPage.getNumberOfValues()));
+		try {
+			int maxComputers = controller.numberOfComputers();
+			int numberOfValues = getIntParameter(request.getParameter("numberOfValues"));
+			listPage.setMaxComputers(maxComputers);
+	
+			listPage.changePage(getIntParameter(request.getParameter("pageIndex")));
+			listPage.changeNumberOfValues(numberOfValues);
+	
+			listPage.setValues(controller.getComputers(listPage.getOffset(), listPage.getNumberOfValues()));
 
 		List<ComputerDTOViewDashboard> listOfComputers = new ArrayList<>();
 		for (Computer computer : listPage.getValues()) {
@@ -55,6 +56,10 @@ public class ListComputers extends HttpServlet {
 		request.setAttribute("numberOfValues", numberOfValues);
 		request.setAttribute("pageIndex", listPage.getIndex());
 		request.setAttribute("maxPage", listPage.getMaxPageValue());
+		
+		} catch(DatabaseAccessException exception) {
+			logger.info(exception.getMessage());
+		}
 
 		this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
 	}

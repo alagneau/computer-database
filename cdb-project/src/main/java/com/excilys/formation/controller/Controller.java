@@ -4,6 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.excilys.formation.exception.AddDataException;
+import com.excilys.formation.exception.ArgumentException;
+import com.excilys.formation.exception.DeletingDataException;
+import com.excilys.formation.exception.ReadDataException;
+import com.excilys.formation.exception.UpdatingDataException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 import com.excilys.formation.service.DAOCompany;
@@ -15,8 +20,8 @@ public class Controller {
 	private static Controller controller;
 	
 	private Controller() {
-		daoCompany = new DAOCompany();
-		daoComputer = new DAOComputer();
+		daoCompany = DAOCompany.getInstance();
+		daoComputer = DAOComputer.getInstance();
 	}
 	
 	public static Controller getInstance() {
@@ -26,68 +31,68 @@ public class Controller {
 		return controller;
 	}
 	
-	public int numberOfComputers() {
+	public int numberOfComputers() throws ReadDataException {
 		return daoComputer.count();
 	}
 	
-	public int numberOfCompanies() {
+	public int numberOfCompanies() throws ReadDataException {
 		return daoCompany.count();
 	}
 	
-	public List<Computer> getComputers(int offset, int rows) {
+	public List<Computer> getComputers(int offset, int rows) throws ReadDataException {
 		List<Computer> computers = new ArrayList<Computer>();
 		computers = daoComputer.getRange(offset, rows);
 		
 		return computers;
 	}
 	
-	public List<Company> getCompanies(int offset, int rows) {
+	public List<Company> getCompanies(int offset, int rows) throws ReadDataException {
 		List<Company> companies = new ArrayList<Company>();
 		companies = daoCompany.getRange(offset, rows);
 		
 		return companies;
 	}
 	
-	public List<Company> getAllCompanies() {
+	public List<Company> getAllCompanies() throws ReadDataException {
 		List<Company> companies = new ArrayList<Company>();
 		companies = daoCompany.getAll();
 		
 		return companies;
 	}
 	
-	public Computer getComputerByID(int id) {
+	public Computer getComputerByID(int id) throws ReadDataException, ArgumentException {
 		return daoComputer.getByID(id);
 	}
 	
-	public boolean computerExists(int id) {
+	public boolean computerExists(int id) throws ReadDataException {
 		return daoComputer.exists(id);
 	}
 	
-	public boolean companyExists(int id) {
+	public boolean companyExists(int id) throws ReadDataException {
 		return daoCompany.exists(id);
 	}
 	
-	public int addComputer(Computer computer) {
+	public int addComputer(Computer computer) throws AddDataException {
 		return daoComputer.add(computer);
 	}
 	
-	public boolean changeComputerName(int computerID, String name) {
-		return daoComputer.updateName(computerID, name);
+	public void changeComputerName(Computer computer, String name) throws UpdatingDataException {
+		daoComputer.updateName(computer, name);
 	}
 	
-	public boolean changeComputerCompany(int computerID, int companyID) {
-		return daoComputer.updateCompany(computerID, companyID);
+	public void changeComputerCompany(Computer computer, int companyID) throws UpdatingDataException, ArgumentException {
+		daoComputer.updateCompany(computer, companyID);
 	}
 	
-	public boolean changeComputerIntroduced(int computerID, LocalDate introduced) {
-		return daoComputer.updateIntroduced(computerID, introduced);
+	public void changeComputerIntroduced(Computer computer, LocalDate introduced) throws UpdatingDataException {
+		daoComputer.updateIntroduced(computer, introduced);
 	}
 	
-	public boolean changeComputerDiscontinued(int computerID, LocalDate discontinued) {
-		return daoComputer.updateIntroduced(computerID, discontinued);
+	public void changeComputerDiscontinued(Computer computer, LocalDate discontinued) throws UpdatingDataException {
+		daoComputer.updateIntroduced(computer, discontinued);
 	}
 	
-	public boolean deleteComputer(int id) {
-		return daoComputer.delete(id);
+	public void deleteComputer(Computer computer) throws DeletingDataException {
+		daoComputer.delete(computer);
 	}
 }

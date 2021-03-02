@@ -8,20 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.excilys.formation.exception.ArgumentException;
+import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 
 public class DAOCompany {
 	private static DBConnection dbConnection;
+	private static final DAOCompany daoCompanyInstance = new DAOCompany();
 	private final String COUNT = "SELECT COUNT(id) FROM company;",
 						GET_RANGE = "SELECT id, name FROM company LIMIT ?, ?;",
 						GET_ALL = "SELECT id, name FROM company;",
 						EXISTS = "SELECT COUNT(id) FROM company WHERE id=?;";
 
-	public DAOCompany() {
+	private DAOCompany() {
 		dbConnection = DBConnection.getInstance();
 	}
+	
+	public static DAOCompany getInstance() {
+		return daoCompanyInstance;
+	}
 
-	public int count() {
+	public int count() throws ReadDataException {
 		int value = 0;
 		try (Connection connection = dbConnection.openConnection()) {
 			ResultSet result = connection.createStatement().executeQuery(COUNT);
@@ -29,12 +35,12 @@ public class DAOCompany {
 
 			value = result.getInt(1);
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new ReadDataException(sqlException.getMessage());
 		}
 		return value;
 	}
 
-	public List<Company> getRange(int offset, int numberOfRows) {
+	public List<Company> getRange(int offset, int numberOfRows) throws ReadDataException {
 		List<Company> companies = new ArrayList<Company>();
 		try (Connection connection = dbConnection.openConnection()) {
 
@@ -53,12 +59,12 @@ public class DAOCompany {
 			}
 
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new ReadDataException(sqlException.getMessage());
 		}
 		return companies;
 	}
 
-	public List<Company> getAll() {
+	public List<Company> getAll() throws ReadDataException {
 		List<Company> companies = new ArrayList<Company>();
 		try (Connection connection = dbConnection.openConnection()) {
 			ResultSet result = connection.createStatement().executeQuery(GET_ALL);
@@ -73,12 +79,12 @@ public class DAOCompany {
 			}
 			
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new ReadDataException(sqlException.getMessage());
 		}
 		return companies;
 	}
 
-	public boolean exists(int id) {
+	public boolean exists(int id) throws ReadDataException {
 		boolean returnValue = false;
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(EXISTS);
@@ -89,7 +95,7 @@ public class DAOCompany {
 
 			returnValue = (result.getInt(1) > 0) ? true : false;
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new ReadDataException(sqlException.getMessage());
 		}
 		return returnValue;
 	}

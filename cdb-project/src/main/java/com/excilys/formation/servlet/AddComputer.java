@@ -17,6 +17,7 @@ import com.excilys.formation.dto.mapper.CompanyDTOMapper;
 import com.excilys.formation.dto.mapper.ComputerDTOMapper;
 import com.excilys.formation.dto.model.CompanyDTOViewAdd;
 import com.excilys.formation.dto.model.ComputerDTOViewAdd;
+import com.excilys.formation.exception.DatabaseAccessException;
 import com.excilys.formation.model.Company;
 
 public class AddComputer extends HttpServlet {
@@ -31,13 +32,18 @@ public class AddComputer extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		List<Company> companies = controller.getAllCompanies();
-		
 		List<CompanyDTOViewAdd> listOfCompanies = new ArrayList<>();
-		for(Company company : companies) {
-			listOfCompanies.add(CompanyDTOMapper.companyToDTOViewAdd(company));
-		}
 		
+		try {
+			List<Company> companies = controller.getAllCompanies();
+		
+			for(Company company : companies) {
+				listOfCompanies.add(CompanyDTOMapper.companyToDTOViewAdd(company));
+			}
+		} catch(DatabaseAccessException exception) {
+			System.out.println(exception.getMessage());
+		}
+			
 		request.setAttribute("companies", listOfCompanies);
 		
 		this.getServletContext().getRequestDispatcher("/WEB-INF/views/addComputer.jsp").forward(request, response);

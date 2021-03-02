@@ -10,13 +10,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
+import com.excilys.formation.exception.DeletingDataException;
+import com.excilys.formation.exception.ReadDataException;
+import com.excilys.formation.exception.UpdatingDataException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
 public class DAOComputer {
 	private static DBConnection dbConnection;
-	private static DAOComputer daoComputer;
+	private static DAOComputer daoComputerInstance = new DAOComputer();
 	private final String NUMBER_OF_COMPUTER = "SELECT COUNT(id) FROM computer;",
 						GET_RANGE = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id as \"companyID\", company.name as \"companyName\" "
 								+ "FROM computer LEFT JOIN company ON computer.company_id=company.id "
@@ -34,18 +38,15 @@ public class DAOComputer {
 						UPDATE_DISCONTINUED = "UPDATE computer SET discontinued = ? WHERE id = ?;",
 						DELETE = "DELETE FROM computer WHERE id = ?;";
 
-	public DAOComputer() {
+	private DAOComputer() {
 		dbConnection = DBConnection.getInstance();
 	}
 
 	public static DAOComputer getInstance() {
-		if (daoComputer == null) {
-			daoComputer = new DAOComputer();
-		}
-		return daoComputer;
+		return daoComputerInstance;
 	}
 
-	public int count() {
+	public int count() throws ReadDataException {
 		int value = 0;
 		try (Connection connection = dbConnection.openConnection()) {
 			ResultSet result = connection.createStatement().executeQuery(NUMBER_OF_COMPUTER);
@@ -53,12 +54,12 @@ public class DAOComputer {
 
 			value = result.getInt(1);
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new ReadDataException(sqlException.getMessage());
 		}
 		return value;
 	}
 
-	public List<Computer> getRange(int offset, int numberOfRows) {
+	public List<Computer> getRange(int offset, int numberOfRows) throws ReadDataException {
 		List<Computer> computers = new ArrayList<Computer>();
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(GET_RANGE);
@@ -82,12 +83,12 @@ public class DAOComputer {
 			}
 
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new ReadDataException(sqlException.getMessage());
 		}
 		return computers;
 	}
 
-	public Computer getByID(int id) {
+	public Computer getByID(int id) throws ReadDataException, ArgumentException {
 		Computer computer = null;
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(GET_BY_ID);
@@ -95,26 +96,21 @@ public class DAOComputer {
 			ResultSet result = statement.executeQuery();
 
 			if (result.next()) {
-				
-				try {
-					computer = new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
-							.company(new Company.CompanyBuilder().id(result.getInt("companyID"))
-									.name(result.getString("companyName"))
-									.build())
-							.introduced(dateToLocalDate(result.getDate("introduced")))
-							.discontinued(dateToLocalDate(result.getDate("introduced")))
-							.build();
-				} catch(ArgumentException exception) {
-					System.out.println(exception.getMessage());
-				}
+				computer = new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
+						.company(new Company.CompanyBuilder().id(result.getInt("companyID"))
+								.name(result.getString("companyName"))
+								.build())
+						.introduced(dateToLocalDate(result.getDate("introduced")))
+						.discontinued(dateToLocalDate(result.getDate("introduced")))
+						.build();
 			}
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new ReadDataException(sqlException.getMessage());
 		}
 		return computer;
 	}
 
-	public boolean exists(int id) {
+	public boolean exists(int id) throws ReadDataException {
 		boolean returnValue = false;
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(EXISTS);
@@ -125,13 +121,13 @@ public class DAOComputer {
 
 			returnValue = (result.getInt(1) > 0) ? true : false;
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new ReadDataException(sqlException.getMessage());
 		}
 		return returnValue;
 	}
 
-	public int add(Computer computer) {
-		int status = 0;
+	public int add(Computer computer) throws AddDataException {
+		int newID = 0;
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(ADD_COMPUTER, Statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, computer.getName());
@@ -143,88 +139,74 @@ public class DAOComputer {
 			ResultSet result = statement.getGeneratedKeys();
 			result.next();
 
-			status = result.getInt(1);
+			newID = result.getInt(1);
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new AddDataException(sqlException.getMessage());
 		}
 
-		return status;
+		return newID;
 	}
 
-	public boolean updateName(int computerID, String name) {
-		boolean status = false;
+	public void updateName(Computer computer, String name) throws UpdatingDataException {
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(UPDATE_NAME);
 			statement.setString(1, name);
-			statement.setInt(2, computerID);
+			statement.setInt(2, computer.getID());
 
 			statement.executeUpdate();
-			status = true;
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new UpdatingDataException(sqlException.getMessage());
 		}
-		return status;
 	}
 
-	public boolean updateCompany(int computerID, int companyID) {
-		boolean status = false;
-		if (companyID <= 0)
-			return false;
+	public void updateCompany(Computer computer, int companyID) throws ArgumentException, UpdatingDataException {
+		if (companyID <= 0) {
+			throw new ArgumentException("Invalid company ID : " + companyID);
+		}
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(UPDATE_COMPANY);
 			statement.setInt(1, companyID);
-			statement.setInt(2, computerID);
+			statement.setInt(2, computer.getID());
 
 			statement.executeUpdate();
-			status = true;
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new UpdatingDataException(sqlException.getMessage());
 		}
-		return status;
 	}
 
-	public boolean updateIntroduced(int computerID, LocalDate introduced) {
-		boolean status = false;
+	public void updateIntroduced(Computer computer, LocalDate introduced) throws UpdatingDataException {
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(UPDATE_INTRODUCED);
 			statement.setDate(1, localDateToDate(introduced));
-			statement.setInt(2, computerID);
+			statement.setInt(2, computer.getID());
 
 			statement.executeUpdate();
-			status = true;
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new UpdatingDataException(sqlException.getMessage());
 		}
-		return status;
 	}
 
-	public boolean updateDiscontinued(int computerID, LocalDate discontinued) {
-		boolean status = false;
+	public void updateDiscontinued(Computer computer, LocalDate discontinued) throws UpdatingDataException {
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(UPDATE_DISCONTINUED);
 			statement.setDate(1, localDateToDate(discontinued));
-			statement.setInt(2, computerID);
+			statement.setInt(2, computer.getID());
 
 			statement.executeUpdate();
-			status = true;
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new UpdatingDataException(sqlException.getMessage());
 		}
-		return status;
 	}
 
-	public boolean delete(int id) {
-		boolean status = false;
+	public void delete(Computer computer) throws DeletingDataException {
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(DELETE);
-			statement.setInt(1, id);
+			statement.setInt(1, computer.getID());
 
 			statement.executeUpdate();
-			status = true;
 		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
+			throw new DeletingDataException(sqlException.getMessage());
 		}
-		return status;
 	}
 
 	private LocalDate dateToLocalDate(Date date) {

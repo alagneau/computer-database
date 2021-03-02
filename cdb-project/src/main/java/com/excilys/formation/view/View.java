@@ -9,7 +9,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.excilys.formation.controller.Controller;
+import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
+import com.excilys.formation.exception.DatabaseAccessException;
+import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
@@ -127,8 +130,12 @@ public class View {
 	}
 
 	private void pageListDatas(String query) {
-		int maxValues = (actualPage == Page.COMPUTERS) ? controller.numberOfComputers()
-				: controller.numberOfCompanies();
+		int maxValues = 0;
+		try {
+			maxValues = (actualPage == Page.COMPUTERS) ? controller.numberOfComputers() : controller.numberOfCompanies();
+		} catch(DatabaseAccessException exception) {
+			System.out.println(exception.getMessage());
+		}
 		switch (query) {
 		case "P":
 			offset = (offset > 9) ? offset - 10 : maxValues - 10;
@@ -153,7 +160,11 @@ public class View {
 	private void printAllComputers() {
 		List<Computer> computers = null;
 
-		computers = controller.getComputers(offset, numberOfRows);
+		try {
+			computers = controller.getComputers(offset, numberOfRows);
+		} catch (ReadDataException exception) {
+			System.out.println(exception.getMessage());
+		}
 
 		System.out.println(Computer.HEADER);
 
@@ -167,7 +178,11 @@ public class View {
 	private void printAllCompanies() {
 		List<Company> companies = null;
 
-		companies = controller.getCompanies(offset, numberOfRows);
+		try {
+			companies = controller.getCompanies(offset, numberOfRows);
+		} catch (ReadDataException exception) {
+			System.out.println(exception.getMessage());
+		}
 
 		System.out.println("Entreprise");
 
@@ -184,10 +199,16 @@ public class View {
 			actualPage = Page.HOME;
 		}
 		int id;
-		if ((id = queryToInt(query)) > 0)
-			computerDetails = controller.getComputerByID(id);
-		else
+		if ((id = queryToInt(query)) > 0) {
+			try {
+				computerDetails = controller.getComputerByID(id);
+			} catch (ReadDataException | ArgumentException exception) {
+				System.out.println(exception.getMessage());
+			}
+		}
+		else {
 			computerDetails = null;
+		}
 	}
 
 	private void printDetailComputer() {
@@ -230,18 +251,22 @@ public class View {
 				break;
 			default:
 				int id = queryToInt(query);
-				if (controller.companyExists(id)) {
-					try {
-						computerDetails = new Computer.ComputerBuilder(computerDetails.getName()).id(id).build();
-						if ((id = controller.addComputer(computerDetails)) > 0) {
-							pageIndex++;
-						} else
-							System.out.println("L'ordinateur n'a pas peu être ajouté...");
-					} catch (ArgumentException exception) {
-						System.out.println(exception.getMessage());
+				try {
+					if (controller.companyExists(id)) {
+						try {
+							computerDetails = new Computer.ComputerBuilder(computerDetails.getName()).id(id).build();
+							if ((id = controller.addComputer(computerDetails)) > 0) {
+								pageIndex++;
+							} else
+								System.out.println("L'ordinateur n'a pas peu être ajouté...");
+						} catch (ArgumentException exception) {
+							System.out.println(exception.getMessage());
+						}
+					} else {
+						System.out.println("Cette entreprise n'est pas connue...");
 					}
-				} else {
-					System.out.println("Cette entreprise n'est pas connue...");
+				} catch (ReadDataException | AddDataException exception) {
+					System.out.println(exception.getMessage());
 				}
 			}
 			break;
@@ -288,6 +313,8 @@ public class View {
 				}
 			} catch (NumberFormatException exception) {
 				printError(query);
+			} catch (DatabaseAccessException | ArgumentException exception) {
+				System.out.println(exception.getMessage());
 			}
 			break;
 		case 1:
@@ -320,11 +347,12 @@ public class View {
 				pageIndex = 1;
 				break;
 			default:
-				if (controller.changeComputerName(computerDetails.getID(), query)) {
+				try {
+					controller.changeComputerName(computerDetails, query);
 					computerDetails = controller.getComputerByID(computerDetails.getID());
 					pageIndex = 6;
-				} else {
-					System.out.println("Une erreur a été rencontrée..");
+				} catch(DatabaseAccessException | ArgumentException exception) {
+					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
 					System.out.println("ID = " + computerDetails.getID() + " nom = " + computerDetails.getName());
 					pageIndex = 0;
 				}
@@ -342,11 +370,12 @@ public class View {
 				pageIndex = 1;
 				break;
 			default:
-				if (controller.changeComputerCompany(computerDetails.getID(), queryToInt(query))) {
+				try {
+					controller.changeComputerCompany(computerDetails, queryToInt(query));
 					computerDetails = controller.getComputerByID(computerDetails.getID());
 					pageIndex = 6;
-				} else {
-					System.out.println("Une erreur a été rencontrée..");
+				} catch(DatabaseAccessException | ArgumentException exception) {
+					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
 					pageIndex = 0;
 				}
 			}
@@ -365,11 +394,12 @@ public class View {
 			default:
 				Optional<LocalDate> localDate = stringToLocalDate(query);
 				if (localDate.isPresent()) {
-					if (controller.changeComputerName(computerDetails.getID(), query)) {
+					try {
+						controller.changeComputerName(computerDetails, query);
 						computerDetails = controller.getComputerByID(computerDetails.getID());
 						pageIndex = 6;
-					} else {
-						System.out.println("Une erreur a été rencontrée..");
+					} catch(DatabaseAccessException | ArgumentException exception) {
+						System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
 						System.out.println("ID = " + computerDetails.getID() + " nom = " + computerDetails.getName());
 						pageIndex = 0;
 					}
@@ -434,11 +464,16 @@ public class View {
 			if (query.equals("A")) {
 				actualPage = Page.HOME;
 			} else {
-				if (controller.computerExists(queryToInt(query))) {
-					computerDetails = controller.getComputerByID(queryToInt(query));
-					pageIndex++;
-				} else
-					System.out.println("L'ordinateur " + query + " n'existe pas.");
+				try {
+					if (controller.computerExists(queryToInt(query))) {
+						computerDetails = controller.getComputerByID(queryToInt(query));
+						pageIndex++;
+					} else {
+						System.out.println("L'ordinateur " + query + " n'existe pas.");
+					}
+				} catch (DatabaseAccessException | ArgumentException exception) {
+					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
+				}
 			}
 			break;
 		case 1:
@@ -450,9 +485,10 @@ public class View {
 				pageIndex = 0;
 				break;
 			case "S":
-				if (controller.deleteComputer(computerDetails.getID())) {
+				try {
+					controller.deleteComputer(computerDetails);
 					pageIndex = 2;
-				} else {
+				} catch(DatabaseAccessException exception) {
 					System.out.println("Il y a eu une erreur à la suppression de l'ordinateur..");
 					pageIndex = 0;
 				}
