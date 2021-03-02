@@ -45,7 +45,7 @@ public class DAOCompany {
 
 			while (result.next()) {
 				try {
-					companies.add(new Company.CompanyBuilder(result.getInt("id")).name(result.getString("name"))
+					companies.add(new Company.CompanyBuilder().id(result.getInt("id")).name(result.getString("name"))
 											.build());
 				} catch (ArgumentException exception) {
 					System.out.println(exception.getMessage());
@@ -65,7 +65,7 @@ public class DAOCompany {
 			
 			while (result.next()) {
 				try {
-					companies.add(new Company.CompanyBuilder(result.getInt("id")).name(result.getString("name"))
+					companies.add(new Company.CompanyBuilder().id(result.getInt("id")).name(result.getString("name"))
 											.build());
 				} catch (ArgumentException exception) {
 					System.out.println(exception.getMessage());

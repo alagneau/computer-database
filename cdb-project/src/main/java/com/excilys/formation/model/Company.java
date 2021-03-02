@@ -21,11 +21,15 @@ public class Company {
 	}
 	
 	public static class CompanyBuilder{
-		private final int id;
+		private int id;
 		private String name;
 		
-		public CompanyBuilder(int id) {
+		public CompanyBuilder() {
+		}
+		
+		public CompanyBuilder id(int id) {
 			this.id = id;
+			return this;
 		}
 		public CompanyBuilder name(String name) {
 			this.name = name;

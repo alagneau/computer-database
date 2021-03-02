@@ -9,15 +9,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.formation.constants.GlobalConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.controller.Controller;
+import com.excilys.formation.dto.mapper.CompanyDTOMapper;
+import com.excilys.formation.dto.mapper.ComputerDTOMapper;
+import com.excilys.formation.dto.model.CompanyDTOViewAdd;
+import com.excilys.formation.dto.model.ComputerDTOViewAdd;
 import com.excilys.formation.model.Company;
-import com.excilys.formation.model.Computer;
 
 public class AddComputer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Controller controller;
-	private List<Company> companies = new ArrayList<Company>();
+	private static Logger logger = LoggerFactory.getLogger(ListComputers.class);
 
 	public AddComputer() {
 		super();
@@ -26,9 +31,14 @@ public class AddComputer extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		companies = controller.getAllCompanies();
+		List<Company> companies = controller.getAllCompanies();
 		
-		request.setAttribute("companies", companies);
+		List<CompanyDTOViewAdd> listOfCompanies = new ArrayList<>();
+		for(Company company : companies) {
+			listOfCompanies.add(CompanyDTOMapper.companyToDTOViewAdd(company));
+		}
+		
+		request.setAttribute("companies", listOfCompanies);
 		
 		this.getServletContext().getRequestDispatcher("/WEB-INF/views/addComputer.jsp").forward(request, response);
 	}
@@ -37,15 +47,25 @@ public class AddComputer extends HttpServlet {
 			throws ServletException, IOException {
 		
 		try {
+			ComputerDTOViewAdd computerDTO = new ComputerDTOViewAdd();
+			computerDTO.name = request.getParameter("computerName");
+			computerDTO.introduced = request.getParameter("introduced");
+			computerDTO.discontinued = request.getParameter("discontinued");
+			computerDTO.companyID = request.getParameter("companyId");
+			
+			controller.addComputer(ComputerDTOMapper.dtoViewAddToComputer(computerDTO));
+			
+			/*
 			controller.addComputer(new Computer.ComputerBuilder(request.getParameter("computerName"))
-									.company(new Company.CompanyBuilder(Integer.parseInt(request.getParameter("companyId"))).build())
-									.introduced(GlobalConstants.StringToLocalDate(request.getParameter("introduced")))
-									.discontinued(GlobalConstants.StringToLocalDate(request.getParameter("discontinued")))
+									.company(new Company.CompanyBuilder().id(Integer.parseInt(request.getParameter("companyId"))).build())
+									.introduced(stringToLocalDate(request.getParameter("introduced")))
+									.discontinued(stringToLocalDate(request.getParameter("discontinued")))
 									.build());
+									*/
 			
 			 
 		} catch (Exception exception) {
-			exception.printStackTrace();
+			logger.info(exception.getMessage());
 			
 		}
 		doGet(request, response);

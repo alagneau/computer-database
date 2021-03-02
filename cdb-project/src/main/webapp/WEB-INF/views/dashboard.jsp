@@ -6,9 +6,9 @@
 <meta charset="utf-8">
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!-- Bootstrap -->
-<style><%@include file="../css/bootstrap.min.css"%></style>
-<style><%@include file="../css/font-awesome.css"%></style>
-<style><%@include file="../css/main.css"%></style>
+<style><%@include file="/css/bootstrap.min.css"%></style>
+<style><%@include file="/css/font-awesome.css"%></style>
+<style><%@include file="/css/main.css"%></style>
 </head>
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
@@ -86,7 +86,7 @@
                         </td>
                         <td><c:out value="${ computer.getIntroduced() }"/></td>
                         <td><c:out value="${ computer.getDiscontinued() }"/></td>
-                        <td><c:out value="${ computer.getCompany().getName() }"/></td>
+                        <td><c:out value="${ computer.getCompanyName() }"/></td>
                     </tr>
 					</c:forEach>
                 </tbody>
@@ -138,9 +138,9 @@
         </div>
 
     </footer>
-<script src="../js/jquery.min.js"></script>
-<script src="../js/bootstrap.min.js"></script>
-<script src="../js/dashboard.js"></script>
-
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/dashboard.js"></script>
+	
 </body>
 </html>

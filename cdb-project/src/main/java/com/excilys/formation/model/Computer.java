@@ -1,9 +1,8 @@
 package com.excilys.formation.model;
 
-import static com.excilys.formation.constants.GlobalConstants.DATE_FORMAT;
-
 import java.time.LocalDate;
 
+import com.excilys.formation.constants.GlobalConstants;
 import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.validator.ComputerValidator;
 
@@ -48,8 +47,8 @@ public class Computer {
 	public String toString() {
 		
 		return String.format(printFormat, getID(), getName(), getCompany().getName(), 
-					localDateToString(getIntroduced()),
-					localDateToString(getDiscontinued()));
+					GlobalConstants.localDateToString(getIntroduced()),
+					GlobalConstants.localDateToString(getDiscontinued()));
 	}
 	
 	public static class ComputerBuilder {
@@ -81,14 +80,6 @@ public class Computer {
 			Computer computer = new Computer(this);
 			ComputerValidator.validComputer(computer);
 			return computer;
-		}
-	}
-	
-	private String localDateToString(LocalDate localDate) {
-		if (localDate != null) {
-			return localDate.format(DATE_FORMAT);
-		} else {
-			return "none";
 		}
 	}
 }

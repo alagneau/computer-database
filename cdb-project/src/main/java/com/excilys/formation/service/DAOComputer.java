@@ -69,7 +69,7 @@ public class DAOComputer {
 			while (result.next()) {
 				try {
 					Computer computer = new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
-							.company(new Company.CompanyBuilder(result.getInt("companyID"))
+							.company(new Company.CompanyBuilder().id(result.getInt("companyID"))
 									.name(result.getString("companyName"))
 									.build())
 							.introduced(dateToLocalDate(result.getDate("introduced")))
@@ -98,7 +98,7 @@ public class DAOComputer {
 				
 				try {
 					computer = new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
-							.company(new Company.CompanyBuilder(result.getInt("companyID"))
+							.company(new Company.CompanyBuilder().id(result.getInt("companyID"))
 									.name(result.getString("companyName"))
 									.build())
 							.introduced(dateToLocalDate(result.getDate("introduced")))
