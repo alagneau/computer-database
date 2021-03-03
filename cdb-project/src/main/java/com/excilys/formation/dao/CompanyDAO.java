@@ -1,4 +1,4 @@
-package com.excilys.formation.service;
+package com.excilys.formation.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,24 +6,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 
-public class DAOCompany {
+public class CompanyDAO {
 	private static DBConnection dbConnection;
-	private static final DAOCompany daoCompanyInstance = new DAOCompany();
+	private static final CompanyDAO daoCompanyInstance = new CompanyDAO();
 	private final String COUNT = "SELECT COUNT(id) FROM company;",
 						GET_RANGE = "SELECT id, name FROM company LIMIT ?, ?;",
 						GET_ALL = "SELECT id, name FROM company;",
 						EXISTS = "SELECT COUNT(id) FROM company WHERE id=?;";
 
-	private DAOCompany() {
+	private CompanyDAO() {
 		dbConnection = DBConnection.getInstance();
 	}
 	
-	public static DAOCompany getInstance() {
+	public static CompanyDAO getInstance() {
 		return daoCompanyInstance;
 	}
 
@@ -40,8 +41,8 @@ public class DAOCompany {
 		return value;
 	}
 
-	public List<Company> getRange(int offset, int numberOfRows) throws ReadDataException {
-		List<Company> companies = new ArrayList<Company>();
+	public List<Optional<Company>> getRange(int offset, int numberOfRows) throws ReadDataException {
+		List<Optional<Company>> companies = new ArrayList<>();
 		try (Connection connection = dbConnection.openConnection()) {
 
 			PreparedStatement statement = connection.prepareStatement(GET_RANGE);
@@ -51,10 +52,12 @@ public class DAOCompany {
 
 			while (result.next()) {
 				try {
-					companies.add(new Company.CompanyBuilder().id(result.getInt("id")).name(result.getString("name"))
-											.build());
+					companies.add(Optional.ofNullable(new Company.CompanyBuilder()
+														.id(result.getInt("id"))
+														.name(result.getString("name"))
+														.build()));
 				} catch (ArgumentException exception) {
-					System.out.println(exception.getMessage());
+					companies.add(Optional.empty());
 				}
 			}
 
@@ -64,17 +67,19 @@ public class DAOCompany {
 		return companies;
 	}
 
-	public List<Company> getAll() throws ReadDataException {
-		List<Company> companies = new ArrayList<Company>();
+	public List<Optional<Company>> getAll() throws ReadDataException {
+		List<Optional<Company>> companies = new ArrayList<>();
 		try (Connection connection = dbConnection.openConnection()) {
 			ResultSet result = connection.createStatement().executeQuery(GET_ALL);
 			
 			while (result.next()) {
 				try {
-					companies.add(new Company.CompanyBuilder().id(result.getInt("id")).name(result.getString("name"))
-											.build());
-				} catch (ArgumentException exception) {
-					System.out.println(exception.getMessage());
+					companies.add(Optional.ofNullable(new Company.CompanyBuilder()
+									.id(result.getInt("id"))
+									.name(result.getString("name"))
+									.build()));
+				} catch(ArgumentException exception) {
+					companies.add(Optional.empty());
 				}
 			}
 			

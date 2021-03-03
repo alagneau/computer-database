@@ -3,6 +3,7 @@ package com.excilys.formation.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,15 +20,18 @@ import com.excilys.formation.dto.model.CompanyDTOViewAdd;
 import com.excilys.formation.dto.model.ComputerDTOViewAdd;
 import com.excilys.formation.exception.DatabaseAccessException;
 import com.excilys.formation.model.Company;
+import com.excilys.formation.service.CompanyService;
+import com.excilys.formation.service.ComputerService;
 
 public class AddComputer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private Controller controller;
+	private ComputerService computerService;
+	private CompanyService companyService;
 	private static Logger logger = LoggerFactory.getLogger(ListComputers.class);
 
 	public AddComputer() {
 		super();
-		controller = Controller.getInstance();
+		computerService = ComputerService.getInstance();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -35,13 +39,17 @@ public class AddComputer extends HttpServlet {
 		List<CompanyDTOViewAdd> listOfCompanies = new ArrayList<>();
 		
 		try {
-			List<Company> companies = controller.getAllCompanies();
+			List<Optional<Company>> companies = companyService.getAll();
 		
-			for(Company company : companies) {
-				listOfCompanies.add(CompanyDTOMapper.companyToDTOViewAdd(company));
+			for(Optional<Company> company : companies) {
+				if(company.isPresent()) {
+					listOfCompanies.add(CompanyDTOMapper.companyToDTOViewAdd(company.get()));
+				} else {
+					listOfCompanies.add(new CompanyDTOViewAdd());
+				}
 			}
 		} catch(DatabaseAccessException exception) {
-			System.out.println(exception.getMessage());
+			logger.info(exception.getMessage());
 		}
 			
 		request.setAttribute("companies", listOfCompanies);
@@ -59,15 +67,7 @@ public class AddComputer extends HttpServlet {
 			computerDTO.discontinued = request.getParameter("discontinued");
 			computerDTO.companyID = request.getParameter("companyId");
 			
-			controller.addComputer(ComputerDTOMapper.dtoViewAddToComputer(computerDTO));
-			
-			/*
-			controller.addComputer(new Computer.ComputerBuilder(request.getParameter("computerName"))
-									.company(new Company.CompanyBuilder().id(Integer.parseInt(request.getParameter("companyId"))).build())
-									.introduced(stringToLocalDate(request.getParameter("introduced")))
-									.discontinued(stringToLocalDate(request.getParameter("discontinued")))
-									.build());
-									*/
+			computerService.add(ComputerDTOMapper.dtoViewAddToComputer(computerDTO));
 			
 			 
 		} catch (Exception exception) {

@@ -1,4 +1,4 @@
-package com.excilys.formation.service;
+package com.excilys.formation.dao;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
@@ -18,9 +19,9 @@ import com.excilys.formation.exception.UpdatingDataException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
-public class DAOComputer {
+public class ComputerDAO {
 	private static DBConnection dbConnection;
-	private static DAOComputer daoComputerInstance = new DAOComputer();
+	private static ComputerDAO daoComputerInstance = new ComputerDAO();
 	private final String NUMBER_OF_COMPUTER = "SELECT COUNT(id) FROM computer;",
 						GET_RANGE = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id as \"companyID\", company.name as \"companyName\" "
 								+ "FROM computer LEFT JOIN company ON computer.company_id=company.id "
@@ -38,11 +39,11 @@ public class DAOComputer {
 						UPDATE_DISCONTINUED = "UPDATE computer SET discontinued = ? WHERE id = ?;",
 						DELETE = "DELETE FROM computer WHERE id = ?;";
 
-	private DAOComputer() {
+	private ComputerDAO() {
 		dbConnection = DBConnection.getInstance();
 	}
 
-	public static DAOComputer getInstance() {
+	public static ComputerDAO getInstance() {
 		return daoComputerInstance;
 	}
 
@@ -59,8 +60,8 @@ public class DAOComputer {
 		return value;
 	}
 
-	public List<Computer> getRange(int offset, int numberOfRows) throws ReadDataException {
-		List<Computer> computers = new ArrayList<Computer>();
+	public List<Optional<Computer>> getRange(int offset, int numberOfRows) throws ReadDataException, ArgumentException {
+		List<Optional<Computer>> computers = new ArrayList<>();
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(GET_RANGE);
 			statement.setInt(1, offset);
@@ -68,18 +69,14 @@ public class DAOComputer {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				try {
-					Computer computer = new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
-							.company(new Company.CompanyBuilder().id(result.getInt("companyID"))
-									.name(result.getString("companyName"))
-									.build())
-							.introduced(dateToLocalDate(result.getDate("introduced")))
-							.discontinued(dateToLocalDate(result.getDate("discontinued")))
-							.build();
-					computers.add(computer);
-				} catch (ArgumentException exception) {
-					System.out.println(exception.getMessage());
-				}
+				Optional<Computer> computer = Optional.ofNullable(new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
+						.company(new Company.CompanyBuilder().id(result.getInt("companyID"))
+								.name(result.getString("companyName"))
+								.build())
+						.introduced(dateToLocalDate(result.getDate("introduced")))
+						.discontinued(dateToLocalDate(result.getDate("discontinued")))
+						.build());
+				computers.add(computer);
 			}
 
 		} catch (SQLException sqlException) {
@@ -88,21 +85,21 @@ public class DAOComputer {
 		return computers;
 	}
 
-	public Computer getByID(int id) throws ReadDataException, ArgumentException {
-		Computer computer = null;
+	public Optional<Computer> getByID(int id) throws ReadDataException, ArgumentException {
+		Optional<Computer> computer = null;
 		try (Connection connection = dbConnection.openConnection()) {
 			PreparedStatement statement = connection.prepareStatement(GET_BY_ID);
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
 
 			if (result.next()) {
-				computer = new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
+				computer = Optional.ofNullable(new Computer.ComputerBuilder(result.getString("name")).id(result.getInt("id"))
 						.company(new Company.CompanyBuilder().id(result.getInt("companyID"))
 								.name(result.getString("companyName"))
 								.build())
 						.introduced(dateToLocalDate(result.getDate("introduced")))
 						.discontinued(dateToLocalDate(result.getDate("introduced")))
-						.build();
+						.build());
 			}
 		} catch (SQLException sqlException) {
 			throw new ReadDataException(sqlException.getMessage());
