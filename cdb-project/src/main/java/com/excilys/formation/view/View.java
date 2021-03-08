@@ -498,7 +498,7 @@ public class View {
 				break;
 			case "S":
 				try {
-					controller.deleteComputer(computerDetails);
+					controller.deleteComputer(computerDetails.getID());
 					pageIndex = 2;
 				} catch(DatabaseAccessException exception) {
 					System.out.println("Il y a eu une erreur à la suppression de l'ordinateur..");

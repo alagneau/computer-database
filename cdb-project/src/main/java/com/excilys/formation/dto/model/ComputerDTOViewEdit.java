@@ -4,14 +4,14 @@ import com.excilys.formation.dto.validator.CompanyDTOValidator;
 import com.excilys.formation.dto.validator.ComputerDTOValidator;
 import com.excilys.formation.exception.ArgumentException;
 
-public class ComputerDTOViewDashboard {
-	public String id, name, introduced, discontinued, companyName;
+public class ComputerDTOViewEdit {
+	public String id, name, introduced, discontinued, companyID, companyName;
 
 	public void validate() throws ArgumentException {
 		ComputerDTOValidator.validID(id);
 		ComputerDTOValidator.validName(name);
 		ComputerDTOValidator.validDates(introduced, discontinued);
-		CompanyDTOValidator.validName(companyName);
+		CompanyDTOValidator.validID(companyID);
 	}
 	
 	public String getID() {
@@ -28,6 +28,10 @@ public class ComputerDTOViewDashboard {
 
 	public String getDiscontinued() {
 		return discontinued;
+	}
+
+	public String getCompanyID() {
+		return companyID;
 	}
 
 	public String getCompanyName() {

@@ -1,10 +1,9 @@
-function validateDates(name, introduced, discontinued, companyID) {
+function validateDates(name, introduced, discontinued) {
 
 	return isValidName(name) &&
 			isValidIntroduced(introduced) &&
 			isValidDiscontinued(discontinued) &&
-			compareDates(introduced, discontinued) &&
-			isValidCompany(companyID);
+			compareDates(introduced, discontinued);
 }
 
 function isValidName(name) {

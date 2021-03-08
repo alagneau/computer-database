@@ -6,34 +6,35 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.excilys.formation.controller.Controller;
 import com.excilys.formation.dto.mapper.CompanyDTOMapper;
 import com.excilys.formation.dto.mapper.ComputerDTOMapper;
 import com.excilys.formation.dto.model.CompanyDTOViewAdd;
 import com.excilys.formation.dto.model.ComputerDTOViewAdd;
 import com.excilys.formation.exception.DatabaseAccessException;
+import com.excilys.formation.logger.CDBLogger;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.service.CompanyService;
 import com.excilys.formation.service.ComputerService;
 
+@WebServlet("/addComputer")
 public class AddComputer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ComputerService computerService;
 	private CompanyService companyService;
-	private static Logger logger = LoggerFactory.getLogger(ListComputers.class);
+	private static CDBLogger logger = new CDBLogger(AddComputer.class);
 
 	public AddComputer() {
 		super();
 		computerService = ComputerService.getInstance();
+		companyService = CompanyService.getInstance();
 	}
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		List<CompanyDTOViewAdd> listOfCompanies = new ArrayList<>();
@@ -57,6 +58,7 @@ public class AddComputer extends HttpServlet {
 		this.getServletContext().getRequestDispatcher("/WEB-INF/views/addComputer.jsp").forward(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		

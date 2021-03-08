@@ -13,16 +13,12 @@ import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 
 public class CompanyDAO {
-	private static DBConnection dbConnection;
+	private static DBConnection dbConnection = DBConnection.getInstance();
 	private static final CompanyDAO daoCompanyInstance = new CompanyDAO();
-	private final String COUNT = "SELECT COUNT(id) FROM company;",
-						GET_RANGE = "SELECT id, name FROM company LIMIT ?, ?;",
-						GET_ALL = "SELECT id, name FROM company;",
-						EXISTS = "SELECT COUNT(id) FROM company WHERE id=?;";
-
-	private CompanyDAO() {
-		dbConnection = DBConnection.getInstance();
-	}
+	private static final String COUNT = "SELECT COUNT(id) FROM company;";
+	private static final String GET_RANGE = "SELECT id, name FROM company LIMIT ?, ?;";
+	private static final String GET_ALL = "SELECT id, name FROM company;";
+	private static final String EXISTS = "SELECT COUNT(id) FROM company WHERE id=?;";
 	
 	public static CompanyDAO getInstance() {
 		return daoCompanyInstance;

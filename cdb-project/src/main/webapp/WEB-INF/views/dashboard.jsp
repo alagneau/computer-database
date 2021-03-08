@@ -6,14 +6,14 @@
 <meta charset="utf-8">
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!-- Bootstrap -->
-<style><%@include file="/css/bootstrap.min.css"%></style>
-<style><%@include file="/css/font-awesome.css"%></style>
-<style><%@include file="/css/main.css"%></style>
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="css/font-awesome.css" rel="stylesheet" media="screen">
+<link href="css/main.css" rel="stylesheet" media="screen">
 </head>
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.html"> Application - Computer Database </a>
+            <a class="navbar-brand" href="dashboard"> Application - Computer Database </a>
         </div>
     </header>
 
@@ -24,7 +24,7 @@
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
-                    <form id="searchForm" action="#" method="GET" class="form-inline">
+                    <form id="searchForm" method="GET" class="form-inline">
 
                         <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
                         <input type="submit" id="searchsubmit" value="Filter by name"
@@ -33,12 +33,12 @@
                 </div>
                 <div class="pull-right">
                     <a class="btn btn-success" id="addComputer" href="addComputer">Add Computer</a> 
-                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
+                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Suppress</a>
                 </div>
             </div>
         </div>
 
-        <form id="deleteForm" action="#" method="POST">
+        <form id="deleteForm" action="dashboard" method="POST">
             <input type="hidden" name="selection" value="">
         </form>
 
@@ -79,10 +79,13 @@
                 	<c:forEach items="${ listComputers }" var="computer">
                     <tr>
                         <td class="editMode">
-                            <input type="checkbox" name="cb" class="cb" value="0">
+                            <input type="checkbox" name="cb" class="cb" value="${ computer.getID() }">
                         </td>
                         <td>
-                            <a href="editComputer.html" onclick=""><c:out value="${ computer.getName() }"/></a>
+                            <a href="<c:url value="editComputer">
+	                    		<c:param name="id" value="${ computer.getID() }"/>
+	                    		</c:url>
+	                    		" onclick=""><c:out value="${ computer.getName() }"/></a>
                         </td>
                         <td><c:out value="${ computer.getIntroduced() }"/></td>
                         <td><c:out value="${ computer.getDiscontinued() }"/></td>

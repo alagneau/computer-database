@@ -1,18 +1,20 @@
 package com.excilys.formation.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.excilys.formation.logger.CDBLogger;
 
 
-public class ListPage<T> {
+public class ListPage<T> implements Serializable {
+	private static final long serialVersionUID = 3459132960105476945L;
+	
 	private int index, numberOfValues, maxPageValue, maxComputers;
 	private String searchValue = "";
-	private List<T> values;
+	private transient List<T> values;
 	
-	private Logger logger = LoggerFactory.getLogger(ListPage.class);
+	private transient CDBLogger logger = new CDBLogger(ListPage.class);
 
 	private ListPage(ListPageBuilder<T> builder) {
 		this.index = builder.index;
@@ -73,11 +75,13 @@ public class ListPage<T> {
 	}
 
 	public void changeSearchValue(String searchValue) {
-		if (searchValue != this.searchValue) {
-			index = 1;
+		if (searchValue != null) {
+			if (searchValue != this.searchValue) {
+				index = 1;
+			}
+	
+			this.searchValue = searchValue;
 		}
-
-		this.searchValue = searchValue;
 	}
 
 	public void setValues(List<T> values) {

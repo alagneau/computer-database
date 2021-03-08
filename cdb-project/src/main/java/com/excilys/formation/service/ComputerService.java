@@ -25,9 +25,20 @@ public class ComputerService {
 		return computerDAO.count();
 	}
 	
+	public int filterAndCount(String filter) throws ReadDataException {
+		return computerDAO.filterAndCount(filter);
+	}
+	
 	public List<Optional<Computer>> getRange(int offset, int rows) throws ReadDataException, ArgumentException {
 		List<Optional<Computer>> computers = new ArrayList<>();
 		computers = computerDAO.getRange(offset, rows);
+		
+		return computers;
+	}
+	
+	public List<Optional<Computer>> getRangeFiltered(int offset, int rows, String filter) throws ReadDataException, ArgumentException {
+		List<Optional<Computer>> computers = new ArrayList<>();
+		computers = computerDAO.getRangeFiltered(offset, rows, filter);
 		
 		return computers;
 	}
@@ -60,8 +71,12 @@ public class ComputerService {
 		computerDAO.updateDiscontinued(computer, discontinued);
 	}
 	
-	public void delete(Computer computer) throws DeletingDataException {
-		computerDAO.delete(computer);
+	public void updateAllParameters(Computer computer) throws UpdatingDataException {
+		computerDAO.updateAllParameters(computer);
+	}
+	
+	public void delete(int computerID) throws DeletingDataException {
+		computerDAO.delete(computerID);
 	}
 
 }

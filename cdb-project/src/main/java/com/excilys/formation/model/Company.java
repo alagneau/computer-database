@@ -1,7 +1,6 @@
 package com.excilys.formation.model;
 
 import com.excilys.formation.exception.ArgumentException;
-import com.excilys.formation.validator.CompanyValidator;
 
 public class Company {
 	private final int id;

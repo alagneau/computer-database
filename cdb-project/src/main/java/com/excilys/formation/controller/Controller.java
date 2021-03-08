@@ -90,7 +90,7 @@ public class Controller {
 		computerService.updateDiscontinued(computer, discontinued);
 	}
 	
-	public void deleteComputer(Computer computer) throws DeletingDataException {
-		computerService.delete(computer);
+	public void deleteComputer(int computerID) throws DeletingDataException {
+		computerService.delete(computerID);
 	}
 }
