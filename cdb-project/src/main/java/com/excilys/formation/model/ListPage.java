@@ -9,9 +9,37 @@ import com.excilys.formation.logger.CDBLogger;
 
 public class ListPage<T> implements Serializable {
 	private static final long serialVersionUID = 3459132960105476945L;
+	public static enum ORDER_BY_VALUES {
+		ID("computer.id"), COMPUTER("computer.name"), INTRODUCED("computer.introduced"), DISCONTINUED("computer.discontinued"), COMPANY("company.name");
+
+		private String sqlRequest;
+		
+		private ORDER_BY_VALUES(String value) {
+			this.sqlRequest = value;
+		}
+		
+		public String getRequest() {
+			return sqlRequest;
+		}
+	}
+	public enum ORDER_BY_DIRECTION {
+		ASCENDANT("ASC"), DESCENDANT("DESC");
+		
+		public String sqlRequest;
+		
+		private ORDER_BY_DIRECTION(String value) {
+			this.sqlRequest = value;
+		}
+		
+		public String getRequest() {
+			return sqlRequest;
+		}
+	}
 	
 	private int index, numberOfValues, maxPageValue, maxComputers;
 	private String searchValue = "";
+	private ORDER_BY_VALUES orderByValue = ORDER_BY_VALUES.ID;
+	private ORDER_BY_DIRECTION orderByDirection = ORDER_BY_DIRECTION.ASCENDANT;
 	private transient List<T> values;
 	
 	private transient CDBLogger logger = new CDBLogger(ListPage.class);
@@ -35,6 +63,14 @@ public class ListPage<T> implements Serializable {
 
 	public String getSearchValue() {
 		return searchValue;
+	}
+
+	public ORDER_BY_VALUES getOrderByValue() {
+		return orderByValue;
+	}
+
+	public ORDER_BY_DIRECTION getOrderByDirection() {
+		return orderByDirection;
 	}
 
 	public int getMaxPageValue() {
@@ -81,6 +117,15 @@ public class ListPage<T> implements Serializable {
 			}
 	
 			this.searchValue = searchValue;
+		}
+	}
+	
+	public void changeOrderByValue(ORDER_BY_VALUES newOrder) {
+		changePage(1);
+		if (this.orderByValue == newOrder) {
+			orderByDirection = (orderByDirection == ORDER_BY_DIRECTION.ASCENDANT) ? ORDER_BY_DIRECTION.DESCENDANT : ORDER_BY_DIRECTION.ASCENDANT;
+		} else {
+			this.orderByValue = newOrder;
 		}
 	}
 

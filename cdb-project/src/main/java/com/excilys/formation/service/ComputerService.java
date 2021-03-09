@@ -39,9 +39,9 @@ public class ComputerService {
 		return computers;
 	}
 	
-	public List<Optional<Computer>> getRangeFiltered(int offset, int rows, String filter) throws ReadDataException, ArgumentException {
+	public List<Optional<Computer>> getRangeServlet(int offset, int numberOfRows, String search, String orderByValue, String orderByDirection) throws ReadDataException, ArgumentException {
 		List<Optional<Computer>> computers = new ArrayList<>();
-		computers = computerDAO.getRangeFiltered(offset, rows, filter);
+		computers = computerDAO.getRangeServlet(offset, numberOfRows, search, orderByValue, orderByDirection);
 		
 		return computers;
 	}

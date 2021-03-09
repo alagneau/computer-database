@@ -53,6 +53,16 @@ public class ListComputers extends HttpServlet {
 			listPage.changeSearchValue(request.getParameter("search"));
 			String searchValue = listPage.getSearchValue();
 			
+			String orderValue = request.getParameter("orderByValue");
+			try {
+				if (orderValue != null) {
+					listPage.changeOrderByValue(ListPage.ORDER_BY_VALUES.valueOf(orderValue));
+				}
+			} catch(IllegalArgumentException exception) {
+				logger.info("Invalid value of ORDER_BY_VALUES : " + orderValue);
+			}
+			
+			
 			int maxComputers = computerService.filterAndCount(searchValue);
 			int numberOfValues = getIntParameter(request.getParameter("numberOfValues"));
 			listPage.setMaxComputers(maxComputers);
@@ -60,7 +70,9 @@ public class ListComputers extends HttpServlet {
 			listPage.changePage(getIntParameter(request.getParameter("pageIndex")));
 			listPage.changeNumberOfValues(numberOfValues);
 
-			listPage.setValues(computerService.getRangeFiltered(listPage.getOffset(), listPage.getNumberOfValues(), searchValue));
+			listPage.setValues(computerService.getRangeServlet(listPage.getOffset(), listPage.getNumberOfValues(),
+													searchValue, listPage.getOrderByValue().getRequest(),
+													listPage.getOrderByDirection().getRequest()));
 
 			List<ComputerDTOViewDashboard> listOfComputers = new ArrayList<>();
 			for (Optional<Computer> computer : listPage.getValues()) {
@@ -78,6 +90,7 @@ public class ListComputers extends HttpServlet {
 			request.setAttribute("numberOfValues", numberOfValues);
 			request.setAttribute("pageIndex", listPage.getIndex());
 			request.setAttribute("maxPage", listPage.getMaxPageValue());
+			request.setAttribute("ORDER_BY_VALUES", ListPage.ORDER_BY_VALUES.values());
 
 		} catch (DatabaseAccessException | ArgumentException exception) {
 			logger.info(exception.getMessage());

@@ -37,10 +37,10 @@ public class ComputerDAO {
 								+ "FROM computer LEFT JOIN company ON computer.company_id=company.id "
 								+ "ORDER BY computer.id "
 								+ "LIMIT ?, ?;";
-	private static final String GET_RANGE_FILTERED = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id as \"companyID\", company.name as \"companyName\" "
+	private static final String GET_RANGE_SERVLET = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id as \"companyID\", company.name as \"companyName\" "
 								+ "FROM computer LEFT JOIN company ON computer.company_id=company.id "
 								+ "WHERE computer.name LIKE ? "
-								+ "ORDER BY computer.id "
+								+ "ORDER BY :! "
 								+ "LIMIT ?, ?;";
 	private static final String GET_BY_ID = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id as \"companyID\", company.name as \"companyName\" "
 								+ "FROM computer LEFT JOIN company ON computer.company_id=company.id "
@@ -112,10 +112,14 @@ public class ComputerDAO {
 		return computers;
 	}
 
-	public List<Optional<Computer>> getRangeFiltered(int offset, int numberOfRows, String search) throws ReadDataException, ArgumentException {
+	public List<Optional<Computer>> getRangeServlet(int offset, int numberOfRows, String search, String orderByValue, String orderByDirection) throws ReadDataException, ArgumentException {
 		List<Optional<Computer>> computers = new ArrayList<>();
 		try (Connection connection = dbConnection.openConnection()) {
-			PreparedStatement statement = connection.prepareStatement(GET_RANGE_FILTERED);
+			
+			String newRequest = new String(GET_RANGE_SERVLET);
+			newRequest = newRequest.replace(":!", orderByValue + " " + orderByDirection);
+			
+			PreparedStatement statement = connection.prepareStatement(newRequest);
 			statement.setString(1, "%" + search + "%");
 			statement.setInt(2, offset);
 			statement.setInt(3, numberOfRows);

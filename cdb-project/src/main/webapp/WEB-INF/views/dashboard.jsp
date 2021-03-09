@@ -27,8 +27,9 @@
                     <form id="searchForm" method="GET" class="form-inline">
 
                         <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
-                        <input type="submit" id="searchsubmit" value="Filter by name"
-                        class="btn btn-primary" />
+                        <input type="submit" id="searchsubmit" value="Filter by name" class="btn btn-primary" />
+                        <input type="hidden" name="orderByValue" value="${ORDER_BY_VALUES[0]}"/>
+                        <input type="submit" value="Order by computer ID" class="btn btn-primary"/>
                     </form>
                 </div>
                 <div class="pull-right">
@@ -59,17 +60,41 @@
                         </th>
                         <th>
                             Computer name
+                            <a href="
+								<c:url value="dashboard">
+									<c:param name="orderByValue" value="${ORDER_BY_VALUES[1]}"/>
+								</c:url>">
+								<i class="fa fa-fw fa-sort"></i>
+							</a>
                         </th>
                         <th>
                             Introduced date
+                            <a href="
+								<c:url value="dashboard">
+									<c:param name="orderByValue" value="${ORDER_BY_VALUES[2]}"/>
+								</c:url>">
+								<i class="fa fa-fw fa-sort"></i>
+							</a>
                         </th>
                         <!-- Table header for Discontinued Date -->
                         <th>
                             Discontinued date
+                            <a href="
+								<c:url value="dashboard">
+									<c:param name="orderByValue" value="${ORDER_BY_VALUES[3]}"/>
+								</c:url>">
+								<i class="fa fa-fw fa-sort"></i>
+							</a>
                         </th>
                         <!-- Table header for Company -->
                         <th>
                             Company
+                            <a href="
+								<c:url value="dashboard">
+									<c:param name="orderByValue" value="${ORDER_BY_VALUES[4]}"/>
+								</c:url>">
+								<i class="fa fa-fw fa-sort"></i>
+							</a>
                         </th>
 
                     </tr>
