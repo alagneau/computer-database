@@ -9,12 +9,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import com.excilys.formation.configuration.SpringConfig;
 import com.excilys.formation.controller.Controller;
 import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
@@ -23,8 +22,11 @@ import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
+
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class View {
-	//@Autowired
+	@Autowired
 	private Controller controller;
 	private int offset = 0, numberOfRows = 10;
 	private int pageIndex = 0;
@@ -51,8 +53,6 @@ public class View {
 	private Page actualPage = Page.HOME;
 
 	public View() { 
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
-		controller = context.getBean(Controller.class);
 		System.out.println("Bienvenue sur MyComputerDatabase.com !\n\n");
 		displayPage();
 	}
@@ -271,8 +271,11 @@ public class View {
 				try {
 					if (controller.companyExists(id)) {
 						try {
-							computerDetails = new Computer.ComputerBuilder(computerDetails.getName()).id(id).build();
+							computerDetails = new Computer.ComputerBuilder(computerDetails.getName())
+													.company(new Company.CompanyBuilder().id(id).build())
+													.build();
 							if ((id = controller.addComputer(computerDetails)) > 0) {
+								computerDetails = controller.getComputerByID(id).get();
 								pageIndex++;
 							} else
 								System.out.println("L'ordinateur n'a pas peu être ajouté...");
