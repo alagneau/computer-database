@@ -8,21 +8,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class CompanyDAO {
-	private static DBConnection dbConnection = DBConnection.getInstance();
-	private static final CompanyDAO daoCompanyInstance = new CompanyDAO();
+	@Autowired
+	private DBConnection dbConnection;
 	private static final String COUNT = "SELECT COUNT(id) FROM company;";
 	private static final String GET_RANGE = "SELECT id, name FROM company LIMIT ?, ?;";
 	private static final String GET_ALL = "SELECT id, name FROM company;";
 	private static final String EXISTS = "SELECT COUNT(id) FROM company WHERE id=?;";
-	
-	public static CompanyDAO getInstance() {
-		return daoCompanyInstance;
-	}
 
 	public int count() throws ReadDataException {
 		int value = 0;

@@ -4,17 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.formation.dao.CompanyDAO;
 import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class CompanyService {
-	private final static CompanyService companyServiceInstance = new CompanyService();
-	private final static CompanyDAO companyDAO = CompanyDAO.getInstance();
-
-	public static CompanyService getInstance() {
-		return companyServiceInstance;
-	}
+	@Autowired
+	private CompanyDAO companyDAO;
 	
 	public int count() throws ReadDataException {
 		return companyDAO.count();

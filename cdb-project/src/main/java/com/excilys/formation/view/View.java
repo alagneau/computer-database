@@ -9,6 +9,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.excilys.formation.configuration.SpringConfig;
 import com.excilys.formation.controller.Controller;
 import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
@@ -18,6 +24,7 @@ import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
 public class View {
+	//@Autowired
 	private Controller controller;
 	private int offset = 0, numberOfRows = 10;
 	private int pageIndex = 0;
@@ -43,8 +50,9 @@ public class View {
 
 	private Page actualPage = Page.HOME;
 
-	public View() {
-		controller = Controller.getInstance();
+	public View() { 
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
+		controller = context.getBean(Controller.class);
 		System.out.println("Bienvenue sur MyComputerDatabase.com !\n\n");
 		displayPage();
 	}

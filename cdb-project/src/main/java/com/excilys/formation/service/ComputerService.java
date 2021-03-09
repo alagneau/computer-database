@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.formation.dao.ComputerDAO;
 import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
@@ -13,13 +18,11 @@ import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.exception.UpdatingDataException;
 import com.excilys.formation.model.Computer;
 
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class ComputerService {
-	private final static ComputerService computerServiceInstance = new ComputerService();
-	private final static ComputerDAO computerDAO = ComputerDAO.getInstance();
-
-	public static ComputerService getInstance() {
-		return computerServiceInstance;
-	}
+	@Autowired
+	private ComputerDAO computerDAO;
 	
 	public int count() throws ReadDataException {
 		return computerDAO.count();

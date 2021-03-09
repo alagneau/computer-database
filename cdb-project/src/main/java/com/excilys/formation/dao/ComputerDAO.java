@@ -11,6 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.exception.DeletingDataException;
@@ -19,9 +26,11 @@ import com.excilys.formation.exception.UpdatingDataException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class ComputerDAO {
-	private static DBConnection dbConnection;
-	private static ComputerDAO daoComputerInstance = new ComputerDAO();
+	@Autowired
+	private DBConnection dbConnection;
 	private static final String NUMBER_OF_COMPUTER = "SELECT COUNT(id) FROM computer;";
 	private static final String NUMBER_OF_COMPUTER_FILTERED = "SELECT COUNT(id) FROM computer WHERE computer.name LIKE ? ;";
 	private static final String GET_RANGE = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id as \"companyID\", company.name as \"companyName\" "
@@ -45,14 +54,6 @@ public class ComputerDAO {
 	private static final String UPDATE_DISCONTINUED = "UPDATE computer SET discontinued = ? WHERE id = ?;";
 	private static final String UPDATE_ALL_PARAMETERS = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;";
 	private static final String DELETE = "DELETE FROM computer WHERE id = ?;";
-
-	private ComputerDAO() {
-		dbConnection = DBConnection.getInstance();
-	}
-
-	public static ComputerDAO getInstance() {
-		return daoComputerInstance;
-	}
 
 	public int count() throws ReadDataException {
 		int value = 0;

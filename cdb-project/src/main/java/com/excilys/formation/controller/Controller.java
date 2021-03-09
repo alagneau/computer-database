@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.exception.DeletingDataException;
@@ -15,19 +20,13 @@ import com.excilys.formation.model.Computer;
 import com.excilys.formation.service.CompanyService;
 import com.excilys.formation.service.ComputerService;
 
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class Controller {
+	@Autowired
 	private CompanyService companyService;
+	@Autowired
 	private ComputerService computerService;
-	private final static Controller controllerInstance = new Controller();
-	
-	private Controller() {
-		companyService = CompanyService.getInstance();
-		computerService = ComputerService.getInstance();
-	}
-	
-	public static Controller getInstance() {
-		return controllerInstance;
-	}
 	
 	public int numberOfComputers() throws ReadDataException {
 		return computerService.count();

@@ -5,11 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.dto.mapper.CompanyDTOMapper;
 import com.excilys.formation.dto.mapper.ComputerDTOMapper;
@@ -24,14 +28,16 @@ import com.excilys.formation.service.ComputerService;
 @WebServlet("/addComputer")
 public class AddComputer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	@Autowired
 	private ComputerService computerService;
+	@Autowired
 	private CompanyService companyService;
 	private static CDBLogger logger = new CDBLogger(AddComputer.class);
 
-	public AddComputer() {
-		super();
-		computerService = ComputerService.getInstance();
-		companyService = CompanyService.getInstance();
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+		super.init(config);
 	}
 
 	@Override

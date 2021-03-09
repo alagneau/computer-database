@@ -5,14 +5,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.dto.mapper.ComputerDTOMapper;
 import com.excilys.formation.dto.model.ComputerDTOViewDashboard;
@@ -27,11 +32,14 @@ import com.excilys.formation.service.ComputerService;
 @WebServlet("/dashboard")
 public class ListComputers extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static ComputerService computerService = ComputerService.getInstance();
+	@Autowired
+	private ComputerService computerService;
 	private static CDBLogger logger = new CDBLogger(ListComputers.class);
 
-	public ListComputers() {
-		super();
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+		super.init(config);
 	}
 
 	@Override
