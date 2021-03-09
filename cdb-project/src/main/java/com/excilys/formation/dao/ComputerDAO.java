@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -30,7 +30,7 @@ import com.excilys.formation.model.Computer;
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class ComputerDAO {
 	@Autowired
-	private DBConnection dbConnection;
+	private DataSource dataSource;
 	private static final String NUMBER_OF_COMPUTER = "SELECT COUNT(id) FROM computer;";
 	private static final String NUMBER_OF_COMPUTER_FILTERED = "SELECT COUNT(id) FROM computer WHERE computer.name LIKE ? ;";
 	private static final String GET_RANGE = "SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id as \"companyID\", company.name as \"companyName\" "
@@ -57,7 +57,7 @@ public class ComputerDAO {
 
 	public int count() throws ReadDataException {
 		int value = 0;
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			ResultSet result = connection.createStatement().executeQuery(NUMBER_OF_COMPUTER);
 			result.next();
 
@@ -70,7 +70,7 @@ public class ComputerDAO {
 
 	public int filterAndCount(String filter) throws ReadDataException {
 		int value = 0;
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(NUMBER_OF_COMPUTER_FILTERED);
 			String searchValue = "";
 			if (filter != null) {
@@ -89,7 +89,7 @@ public class ComputerDAO {
 
 	public List<Optional<Computer>> getRange(int offset, int numberOfRows) throws ReadDataException, ArgumentException {
 		List<Optional<Computer>> computers = new ArrayList<>();
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(GET_RANGE);
 			statement.setInt(1, offset);
 			statement.setInt(2, numberOfRows);
@@ -114,7 +114,7 @@ public class ComputerDAO {
 
 	public List<Optional<Computer>> getRangeServlet(int offset, int numberOfRows, String search, String orderByValue, String orderByDirection) throws ReadDataException, ArgumentException {
 		List<Optional<Computer>> computers = new ArrayList<>();
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			
 			String newRequest = new String(GET_RANGE_SERVLET);
 			newRequest = newRequest.replace(":!", orderByValue + " " + orderByDirection);
@@ -144,7 +144,7 @@ public class ComputerDAO {
 
 	public Optional<Computer> getByID(int id) throws ReadDataException, ArgumentException {
 		Optional<Computer> computer = Optional.empty();
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(GET_BY_ID);
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
@@ -166,7 +166,7 @@ public class ComputerDAO {
 
 	public boolean exists(int id) throws ReadDataException {
 		boolean returnValue = false;
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(EXISTS);
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
@@ -182,7 +182,7 @@ public class ComputerDAO {
 
 	public int add(Computer computer) throws AddDataException {
 		int newID = 0;
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(ADD_COMPUTER, Statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, computer.getName());
 			statement.setDate(2, localDateToDate(computer.getIntroduced()));
@@ -202,7 +202,7 @@ public class ComputerDAO {
 	}
 
 	public void updateName(Computer computer, String name) throws UpdatingDataException {
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(UPDATE_NAME);
 			statement.setString(1, name);
 			statement.setInt(2, computer.getID());
@@ -217,7 +217,7 @@ public class ComputerDAO {
 		if (companyID <= 0) {
 			throw new ArgumentException("Invalid company ID : " + companyID);
 		}
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(UPDATE_COMPANY);
 			statement.setInt(1, companyID);
 			statement.setInt(2, computer.getID());
@@ -229,7 +229,7 @@ public class ComputerDAO {
 	}
 
 	public void updateIntroduced(Computer computer, LocalDate introduced) throws UpdatingDataException {
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(UPDATE_INTRODUCED);
 			statement.setDate(1, localDateToDate(introduced));
 			statement.setInt(2, computer.getID());
@@ -241,7 +241,7 @@ public class ComputerDAO {
 	}
 
 	public void updateDiscontinued(Computer computer, LocalDate discontinued) throws UpdatingDataException {
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(UPDATE_DISCONTINUED);
 			statement.setDate(1, localDateToDate(discontinued));
 			statement.setInt(2, computer.getID());
@@ -253,7 +253,7 @@ public class ComputerDAO {
 	}
 
 	public void updateAllParameters(Computer computer) throws UpdatingDataException {
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(UPDATE_ALL_PARAMETERS);
 			statement.setString(1, computer.getName());
 			statement.setDate(2, localDateToDate(computer.getIntroduced()));
@@ -268,7 +268,7 @@ public class ComputerDAO {
 	}
 
 	public void delete(int computerID) throws DeletingDataException {
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(DELETE);
 			statement.setInt(1, computerID);
 

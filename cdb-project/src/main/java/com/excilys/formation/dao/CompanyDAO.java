@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -21,7 +23,7 @@ import com.excilys.formation.model.Company;
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class CompanyDAO {
 	@Autowired
-	private DBConnection dbConnection;
+	private DataSource dataSource;
 	private static final String COUNT = "SELECT COUNT(id) FROM company;";
 	private static final String GET_RANGE = "SELECT id, name FROM company LIMIT ?, ?;";
 	private static final String GET_ALL = "SELECT id, name FROM company;";
@@ -29,7 +31,7 @@ public class CompanyDAO {
 
 	public int count() throws ReadDataException {
 		int value = 0;
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			ResultSet result = connection.createStatement().executeQuery(COUNT);
 			result.next();
 
@@ -42,7 +44,7 @@ public class CompanyDAO {
 
 	public List<Optional<Company>> getRange(int offset, int numberOfRows) throws ReadDataException {
 		List<Optional<Company>> companies = new ArrayList<>();
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 
 			PreparedStatement statement = connection.prepareStatement(GET_RANGE);
 			statement.setInt(1, offset);
@@ -68,7 +70,7 @@ public class CompanyDAO {
 
 	public List<Optional<Company>> getAll() throws ReadDataException {
 		List<Optional<Company>> companies = new ArrayList<>();
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			ResultSet result = connection.createStatement().executeQuery(GET_ALL);
 			
 			while (result.next()) {
@@ -90,7 +92,7 @@ public class CompanyDAO {
 
 	public boolean exists(int id) throws ReadDataException {
 		boolean returnValue = false;
-		try (Connection connection = dbConnection.openConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
 			PreparedStatement statement = connection.prepareStatement(EXISTS);
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
