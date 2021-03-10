@@ -28,4 +28,4 @@ hs_err_pid*
 .settings/*
 /target/
 /build/
-/src/main/ressources
+/src/main/resources/*
