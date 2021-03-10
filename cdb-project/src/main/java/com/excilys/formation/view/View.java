@@ -30,11 +30,12 @@ public class View {
 	private Controller controller;
 	private int offset = 0, numberOfRows = 10;
 	private int pageIndex = 0;
-	private Computer computerDetails;
+	private Computer computerDetails = null;
+	private Company companyDetails = null;
 	private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
 	private enum Page {
-		HOME("0"), COMPUTERS("1"), COMPANIES("2"), DETAIL("3"), CREATE("4"), UPDATE("5"), DELETE("6");
+		HOME("0"), COMPUTERS("1"), COMPANIES("2"), DETAIL("3"), CREATE("4"), UPDATE("5"), DELETE_COMPUTER("6"), DELETE_COMPANY("7");
 
 		public final String label;
 		public static final Map<String, Page> association = new HashMap<>();
@@ -79,8 +80,11 @@ public class View {
 		case UPDATE:
 			pageUpdate(query);
 			break;
-		case DELETE:
-			pageDelete(query);
+		case DELETE_COMPUTER:
+			pageDeleteComputer(query);
+			break;
+		case DELETE_COMPANY:
+			pageDeleteCompany(query);
 		}
 		displayPage();
 		return statusAppli;
@@ -106,8 +110,10 @@ public class View {
 		case UPDATE:
 			printUpdate();
 			break;
-		case DELETE:
-			printDelete();
+		case DELETE_COMPUTER:
+			printDeleteComputer();
+		case DELETE_COMPANY:
+			printDeleteCompany();
 		}
 	}
 
@@ -135,6 +141,7 @@ public class View {
 		System.out.println("4 : Créer un nouvel ordinateur");
 		System.out.println("5 : Modifier un ordinateur");
 		System.out.println("6 : Supprimer un ordinateur");
+		System.out.println("7 : Supprimer une entreprise");
 
 	}
 
@@ -234,6 +241,15 @@ public class View {
 			System.out.printf(format, "Ordinateur", "Entreprise", "Date d'arrivée", "Date de fin");
 			System.out.printf(format, computerDetails.getName(), computerDetails.getCompany().getName(),
 					computerDetails.getIntroduced(), computerDetails.getDiscontinued());
+			System.out.println("");
+		}
+	}
+
+	private void printDetailCompany() {
+		if (companyDetails != null) {
+			String format = "%-40s%-20s%n";
+			System.out.printf(format, "id", "Company");
+			System.out.printf(format, companyDetails.getID(), companyDetails.getName());
 			System.out.println("");
 		}
 	}
@@ -481,7 +497,7 @@ public class View {
 		}
 	}
 
-	private void pageDelete(String query) {
+	private void pageDeleteComputer(String query) {
 		switch (pageIndex) {
 		case 0:
 			if (query.equals("A")) {
@@ -534,7 +550,7 @@ public class View {
 		}
 	}
 
-	private void printDelete() {
+	private void printDeleteComputer() {
 		switch (pageIndex) {
 		case 0:
 			System.out.println("A : Accueil");
@@ -548,6 +564,76 @@ public class View {
 		case 2:
 			System.out.println("A : Accueil | S : Supprimer un autre ordinateur");
 			System.out.println("L'ordinateur a bien été supprimé de la base de données");
+		}
+	}
+
+	private void pageDeleteCompany(String query) {
+		switch (pageIndex) {
+		case 0:
+			if (query.equals("A")) {
+				actualPage = Page.HOME;
+			} else {
+				try {
+					if (controller.companyExists(queryToInt(query))) {
+						companyDetails = controller.getCompanyByID(queryToInt(query)).get();
+						pageIndex++;
+					} else {
+						System.out.println("L'entreprise n°" + query + " n'existe pas.");
+					}
+				} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
+					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
+				}
+			}
+			break;
+		case 1:
+			switch (query) {
+			case "A":
+				actualPage = Page.HOME;
+				break;
+			case "R":
+				pageIndex = 0;
+				break;
+			case "S":
+				try {
+					controller.deleteCompany(companyDetails.getID());
+					pageIndex = 2;
+				} catch(DatabaseAccessException exception) {
+					System.out.println("Il y a eu une erreur à la suppression de l'entreprise..");
+					pageIndex = 0;
+				}
+				break;
+			default:
+				printError(query);
+			}
+			break;
+		case 2:
+			switch (query) {
+			case "A":
+				actualPage = Page.HOME;
+				break;
+			case "S":
+				pageIndex = 0;
+				break;
+			default:
+				printError(query);
+			}
+		}
+	}
+
+	private void printDeleteCompany() {
+		switch (pageIndex) {
+		case 0:
+			System.out.println("A : Accueil");
+			System.out.println("Entrez l'ID de l'entreprise que vous souhaitez supprimer");
+			break;
+		case 1:
+			System.out.println("A : Accueil | R : Retour | S : Supprimer DEFINITIVEMENT");
+			System.out.println("Voici l'entreprise à supprimer :");
+			printDetailCompany();
+			break;
+		case 2:
+			System.out.println("A : Accueil | S : Supprimer une autre entreprise");
+			System.out.println("L'entreprise a bien été supprimée de la base de données");
 		}
 	}
 

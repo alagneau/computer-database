@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.dao.CompanyDAO;
+import com.excilys.formation.exception.ArgumentException;
+import com.excilys.formation.exception.DatabaseAccessException;
 import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 
@@ -21,6 +23,10 @@ public class CompanyService {
 	
 	public int count() throws ReadDataException {
 		return companyDAO.count();
+	}
+	
+	public Optional<Company> getByID(int id) throws ReadDataException, ArgumentException {
+		return companyDAO.getByID(id);
 	}
 	
 	public List<Optional<Company>> getRange(int offset, int rows) throws ReadDataException {
@@ -41,4 +47,7 @@ public class CompanyService {
 		return companyDAO.exists(id);
 	}
 
+	public void delete(int id) throws DatabaseAccessException {
+		companyDAO.delete(id);
+	}
 }

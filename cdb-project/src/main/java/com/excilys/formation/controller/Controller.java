@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
+import com.excilys.formation.exception.DatabaseAccessException;
 import com.excilys.formation.exception.DeletingDataException;
 import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.exception.UpdatingDataException;
@@ -61,6 +62,10 @@ public class Controller {
 		return computerService.getByID(id);
 	}
 	
+	public Optional<Company> getCompanyByID(int id) throws ReadDataException, ArgumentException {
+		return companyService.getByID(id);
+	}
+	
 	public boolean computerExists(int id) throws ReadDataException {
 		return computerService.exists(id);
 	}
@@ -91,5 +96,9 @@ public class Controller {
 	
 	public void deleteComputer(int computerID) throws DeletingDataException {
 		computerService.delete(computerID);
+	}
+	
+	public void deleteCompany(int companyID) throws DatabaseAccessException {
+		companyService.delete(companyID);
 	}
 }
