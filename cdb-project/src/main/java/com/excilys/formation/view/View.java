@@ -10,7 +10,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +21,8 @@ import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
-
 @Component
-@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Scope("prototype")
 public class View {
 	@Autowired
 	private Controller controller;
@@ -32,28 +30,29 @@ public class View {
 	private int pageIndex = 0;
 	private Computer computerDetails = null;
 	private Company companyDetails = null;
-	private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
 	private enum Page {
-		HOME("0"), COMPUTERS("1"), COMPANIES("2"), DETAIL("3"), CREATE("4"), UPDATE("5"), DELETE_COMPUTER("6"), DELETE_COMPANY("7");
+		HOME("0"), COMPUTERS("1"), COMPANIES("2"), DETAIL("3"), CREATE("4"), UPDATE("5"), DELETE_COMPUTER("6"),
+		DELETE_COMPANY("7");
 
 		public final String label;
-		public static final Map<String, Page> association = new HashMap<>();
+		public static final Map<String, Page> ASSOCIATION = new HashMap<>();
 
 		static {
 			for (Page page : values()) {
-				association.put(page.label, page);
+				ASSOCIATION.put(page.label, page);
 			}
 		}
 
-		private Page(String label) {
+		Page(String label) {
 			this.label = label;
 		}
 	};
 
 	private Page actualPage = Page.HOME;
 
-	public View() { 
+	public View() {
 		System.out.println("Bienvenue sur MyComputerDatabase.com !\n\n");
 		displayPage();
 	}
@@ -123,8 +122,8 @@ public class View {
 		if (query.equals("q") || query.equals("Q")) {
 			System.out.println("\n\nAu plaisir de vous revoir !");
 			return 0;
-		} else if (Page.association.containsKey(query)) {
-			actualPage = Page.association.get(query);
+		} else if (Page.ASSOCIATION.containsKey(query)) {
+			actualPage = Page.ASSOCIATION.get(query);
 		} else {
 			printError(query);
 		}
@@ -148,8 +147,9 @@ public class View {
 	private void pageListDatas(String query) {
 		int maxValues = 0;
 		try {
-			maxValues = (actualPage == Page.COMPUTERS) ? controller.numberOfComputers() : controller.numberOfCompanies();
-		} catch(DatabaseAccessException exception) {
+			maxValues = (actualPage == Page.COMPUTERS) ? controller.numberOfComputers()
+					: controller.numberOfCompanies();
+		} catch (DatabaseAccessException exception) {
 			System.out.println(exception.getMessage());
 		}
 		switch (query) {
@@ -229,8 +229,7 @@ public class View {
 			} catch (ReadDataException | ArgumentException | NoSuchElementException exception) {
 				System.out.println(exception.getMessage());
 			}
-		}
-		else {
+		} else {
 			computerDetails = null;
 		}
 	}
@@ -288,13 +287,13 @@ public class View {
 					if (controller.companyExists(id)) {
 						try {
 							computerDetails = new Computer.ComputerBuilder(computerDetails.getName())
-													.company(new Company.CompanyBuilder().id(id).build())
-													.build();
+									.company(new Company.CompanyBuilder().id(id).build()).build();
 							if ((id = controller.addComputer(computerDetails)) > 0) {
 								computerDetails = controller.getComputerByID(id).get();
 								pageIndex++;
-							} else
+							} else {
 								System.out.println("L'ordinateur n'a pas peu être ajouté...");
+							}
 						} catch (ArgumentException exception) {
 							System.out.println(exception.getMessage());
 						}
@@ -390,7 +389,7 @@ public class View {
 					controller.changeComputerName(computerDetails, query);
 					computerDetails = controller.getComputerByID(computerDetails.getID()).get();
 					pageIndex = 6;
-				} catch(DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
+				} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
 					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
 					System.out.println("ID = " + computerDetails.getID() + " nom = " + computerDetails.getName());
 					pageIndex = 0;
@@ -413,7 +412,7 @@ public class View {
 					controller.changeComputerCompany(computerDetails, queryToInt(query));
 					computerDetails = controller.getComputerByID(computerDetails.getID()).get();
 					pageIndex = 6;
-				} catch(DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
+				} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
 					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
 					pageIndex = 0;
 				}
@@ -437,7 +436,7 @@ public class View {
 						controller.changeComputerName(computerDetails, query);
 						computerDetails = controller.getComputerByID(computerDetails.getID()).get();
 						pageIndex = 6;
-					} catch(DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
+					} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
 						System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
 						System.out.println("ID = " + computerDetails.getID() + " nom = " + computerDetails.getName());
 						pageIndex = 0;
@@ -527,7 +526,7 @@ public class View {
 				try {
 					controller.deleteComputer(computerDetails.getID());
 					pageIndex = 2;
-				} catch(DatabaseAccessException exception) {
+				} catch (DatabaseAccessException exception) {
 					System.out.println("Il y a eu une erreur à la suppression de l'ordinateur..");
 					pageIndex = 0;
 				}
@@ -597,7 +596,7 @@ public class View {
 				try {
 					controller.deleteCompany(companyDetails.getID());
 					pageIndex = 2;
-				} catch(DatabaseAccessException exception) {
+				} catch (DatabaseAccessException exception) {
 					System.out.println("Il y a eu une erreur à la suppression de l'entreprise..");
 					pageIndex = 0;
 				}
@@ -654,7 +653,7 @@ public class View {
 	private Optional<LocalDate> stringToLocalDate(String query) {
 		LocalDate localDate = null;
 		try {
-			localDate = LocalDate.parse(query, dateFormat);
+			localDate = LocalDate.parse(query, DATE_FORMAT);
 		} catch (DateTimeParseException exception) {
 
 		}

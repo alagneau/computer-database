@@ -19,7 +19,7 @@ public class Company {
 		return id;
 	}
 	
-	public static class CompanyBuilder{
+	public static class CompanyBuilder {
 		private int id;
 		private String name;
 		

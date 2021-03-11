@@ -69,7 +69,7 @@ public class EditComputer extends HttpServlet {
 			computerService.updateAllParameters(computer);
 			
 			request.setAttribute("id", computerDTO.id);
-		} catch(ArgumentException | UpdatingDataException exception) {
+		} catch (ArgumentException | UpdatingDataException exception) {
 			logger.info(exception.getMessage());
 		}
 		

@@ -12,12 +12,12 @@ import com.excilys.formation.view.View;
 public class Main {
 	
 	public static void main(String[] args) throws IOException {
-		try(AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class)) {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class)) {
 			View view = context.getBean(View.class);
 			int status = 1;
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			
-			while(status > 0) {
+			while (status > 0) {
 				status = view.update(reader.readLine());
 			}
 		}

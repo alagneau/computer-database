@@ -1,6 +1,8 @@
 package com.excilys.formation.dto.mapper;
 
-import static com.excilys.formation.constants.GlobalConstants.*;
+import static com.excilys.formation.constants.GlobalConstants.localDateToString;
+import static com.excilys.formation.constants.GlobalConstants.stringToLocalDate;
+
 import com.excilys.formation.dto.model.ComputerDTOViewAdd;
 import com.excilys.formation.dto.model.ComputerDTOViewDashboard;
 import com.excilys.formation.dto.model.ComputerDTOViewEdit;
@@ -43,7 +45,7 @@ public class ComputerDTOMapper {
 		return computerDTO;
 	}
 	
-	public static Computer dtoViewAddToComputer(ComputerDTOViewAdd computerDTO) throws ArgumentException{
+	public static Computer dtoViewAddToComputer(ComputerDTOViewAdd computerDTO) throws ArgumentException {
 		computerDTO.validate();
 		return new Computer.ComputerBuilder(computerDTO.name)
 						.introduced(stringToLocalDate(computerDTO.introduced))
@@ -63,7 +65,7 @@ public class ComputerDTOMapper {
 		return computerDTO;
 	}
 	
-	public static Computer dtoViewEditToComputer(ComputerDTOViewEdit computerDTO) throws ArgumentException{
+	public static Computer dtoViewEditToComputer(ComputerDTOViewEdit computerDTO) throws ArgumentException {
 		computerDTO.validate();
 		
 		int computerID = -1, companyID = -1;
@@ -71,7 +73,7 @@ public class ComputerDTOMapper {
 			companyID = Integer.parseInt(computerDTO.companyID);
 			computerID = Integer.parseInt(computerDTO.id);
 			
-		} catch(NumberFormatException exception) {
+		} catch (NumberFormatException exception) {
 			
 		}
 		return new Computer.ComputerBuilder(computerDTO.name)

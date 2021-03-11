@@ -6,42 +6,44 @@ import java.util.List;
 
 import com.excilys.formation.logger.CDBLogger;
 
-
 public class ListPage<T> implements Serializable {
 	private static final long serialVersionUID = 3459132960105476945L;
-	public static enum ORDER_BY_VALUES {
-		ID("computer.id"), COMPUTER("computer.name"), INTRODUCED("computer.introduced"), DISCONTINUED("computer.discontinued"), COMPANY("company.name");
+
+	public enum OrderByValues {
+		ID("computer.id"), COMPUTER("computer.name"), INTRODUCED("computer.introduced"),
+		DISCONTINUED("computer.discontinued"), COMPANY("company.name");
 
 		private String sqlRequest;
-		
-		private ORDER_BY_VALUES(String value) {
+
+		OrderByValues(String value) {
 			this.sqlRequest = value;
 		}
-		
+
 		public String getRequest() {
 			return sqlRequest;
 		}
 	}
-	public enum ORDER_BY_DIRECTION {
+
+	public enum OrderByDirection {
 		ASCENDANT("ASC"), DESCENDANT("DESC");
-		
+
 		public String sqlRequest;
-		
-		private ORDER_BY_DIRECTION(String value) {
+
+		OrderByDirection(String value) {
 			this.sqlRequest = value;
 		}
-		
+
 		public String getRequest() {
 			return sqlRequest;
 		}
 	}
-	
+
 	private int index, numberOfValues, maxPageValue, maxComputers;
 	private String searchValue = "";
-	private ORDER_BY_VALUES orderByValue = ORDER_BY_VALUES.ID;
-	private ORDER_BY_DIRECTION orderByDirection = ORDER_BY_DIRECTION.ASCENDANT;
+	private OrderByValues orderByValue = OrderByValues.ID;
+	private OrderByDirection orderByDirection = OrderByDirection.ASCENDANT;
 	private transient List<T> values;
-	
+
 	private transient CDBLogger logger = new CDBLogger(ListPage.class);
 
 	private ListPage(ListPageBuilder<T> builder) {
@@ -65,11 +67,11 @@ public class ListPage<T> implements Serializable {
 		return searchValue;
 	}
 
-	public ORDER_BY_VALUES getOrderByValue() {
+	public OrderByValues getOrderByValue() {
 		return orderByValue;
 	}
 
-	public ORDER_BY_DIRECTION getOrderByDirection() {
+	public OrderByDirection getOrderByDirection() {
 		return orderByDirection;
 	}
 
@@ -77,7 +79,7 @@ public class ListPage<T> implements Serializable {
 		updateMaxPageValue();
 		return maxPageValue;
 	}
-	
+
 	public int getNumberOfValues() {
 		return numberOfValues;
 	}
@@ -85,9 +87,9 @@ public class ListPage<T> implements Serializable {
 	public int getMaxComputers() {
 		return this.maxComputers;
 	}
-	
+
 	public int getOffset() {
-		return (index-1) * numberOfValues;
+		return (index - 1) * numberOfValues;
 	}
 
 	public void changePage(int pageIndex) {
@@ -101,7 +103,7 @@ public class ListPage<T> implements Serializable {
 			int offset = getOffset();
 			this.numberOfValues = numberOfValues;
 			updateMaxPageValue();
-			
+
 			if (getOffset() > maxComputers) {
 				index = 1;
 			} else {
@@ -115,15 +117,16 @@ public class ListPage<T> implements Serializable {
 			if (searchValue != this.searchValue) {
 				index = 1;
 			}
-	
+
 			this.searchValue = searchValue;
 		}
 	}
-	
-	public void changeOrderByValue(ORDER_BY_VALUES newOrder) {
+
+	public void changeOrderByValue(OrderByValues newOrder) {
 		changePage(1);
 		if (this.orderByValue == newOrder) {
-			orderByDirection = (orderByDirection == ORDER_BY_DIRECTION.ASCENDANT) ? ORDER_BY_DIRECTION.DESCENDANT : ORDER_BY_DIRECTION.ASCENDANT;
+			orderByDirection = (orderByDirection == OrderByDirection.ASCENDANT) ? OrderByDirection.DESCENDANT
+					: OrderByDirection.ASCENDANT;
 		} else {
 			this.orderByValue = newOrder;
 		}
@@ -144,7 +147,7 @@ public class ListPage<T> implements Serializable {
 
 		public ListPageBuilder() {
 		}
-		
+
 		public ListPageBuilder<T> index(int index) {
 			this.index = index;
 			return this;

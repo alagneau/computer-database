@@ -11,19 +11,17 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.exception.ArgumentException;
+import com.excilys.formation.exception.DatabaseAccessException;
 import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.logger.CDBLogger;
 import com.excilys.formation.model.Company;
 
-import com.excilys.formation.exception.DatabaseAccessException;
-
 @Component
-@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+@Scope("singleton")
 public class CompanyDAO {
 	@Autowired
 	private DataSource dataSource;
@@ -102,7 +100,7 @@ public class CompanyDAO {
 									.id(result.getInt("id"))
 									.name(result.getString("name"))
 									.build()));
-				} catch(ArgumentException exception) {
+				} catch (ArgumentException exception) {
 					companies.add(Optional.empty());
 				}
 			}
@@ -141,7 +139,7 @@ public class CompanyDAO {
 			deleteCompanyStatement.setInt(1, id);
 			int res = deleteCompanyStatement.executeUpdate();
 			
-			if (res<1) {
+			if (res < 1) {
 				throw new DatabaseAccessException("The company with the ID " + id + " is not listed in the database");
 			}
 			

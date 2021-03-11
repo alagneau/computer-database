@@ -12,8 +12,8 @@ public class Computer {
 	private final Company company;
 	private final LocalDate introduced, discontinued;
 	
-	private final static String printFormat = "%4s | %-40s| %-40s| %-14s| %-14s";
-	public final static String HEADER = String.format(printFormat, "ID", "Nom", "Entreprise", "Introduced", "Discontinued");
+	private static final String PRINT_FORMAT = "%4s | %-40s| %-40s| %-14s| %-14s";
+	public static final String HEADER = String.format(PRINT_FORMAT, "ID", "Nom", "Entreprise", "Introduced", "Discontinued");
 
 	private Computer(ComputerBuilder builder) {
 		this.id = builder.id;
@@ -46,7 +46,7 @@ public class Computer {
 	@Override
 	public String toString() {
 		
-		return String.format(printFormat, getID(), getName(), getCompany().getName(), 
+		return String.format(PRINT_FORMAT, getID(), getName(), getCompany().getName(), 
 					GlobalConstants.localDateToString(getIntroduced()),
 					GlobalConstants.localDateToString(getDiscontinued()));
 	}

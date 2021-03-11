@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,7 @@ import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 
 @Component
-@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+@Scope("singleton")
 public class CompanyService {
 	@Autowired
 	private CompanyDAO companyDAO;

@@ -4,7 +4,8 @@ import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.model.Company;
 
 public abstract class CompanyValidator {
-	private CompanyValidator() {}
+	private CompanyValidator() {
+	}
 	
 	public static void validCompany(Company company) throws ArgumentException {
 		validName(company);

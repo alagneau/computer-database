@@ -3,7 +3,8 @@ package com.excilys.formation.dto.validator;
 import com.excilys.formation.exception.ArgumentException;
 
 public class CompanyDTOValidator {
-	private CompanyDTOValidator() {}
+	private CompanyDTOValidator() {
+	}
 
 	public static void validName(String name) throws ArgumentException {
 		if (name == null || name.isEmpty()) {
@@ -16,7 +17,7 @@ public class CompanyDTOValidator {
 			try {
 				Integer.parseInt(id);
 			} catch (NumberFormatException exception) {
-				throw new ArgumentException("Not a valid company ID : '" + id +"'");
+				throw new ArgumentException("Not a valid company ID : '" + id + "'");
 			}
 		}
 	}

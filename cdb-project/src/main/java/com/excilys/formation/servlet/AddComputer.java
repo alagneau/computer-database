@@ -44,43 +44,42 @@ public class AddComputer extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		List<CompanyDTOViewAdd> listOfCompanies = new ArrayList<>();
-		
+
 		try {
 			List<Optional<Company>> companies = companyService.getAll();
-		
-			for(Optional<Company> company : companies) {
-				if(company.isPresent()) {
+
+			for (Optional<Company> company : companies) {
+				if (company.isPresent()) {
 					listOfCompanies.add(CompanyDTOMapper.companyToDTOViewAdd(company.get()));
 				} else {
 					listOfCompanies.add(new CompanyDTOViewAdd());
 				}
 			}
-		} catch(DatabaseAccessException exception) {
+		} catch (DatabaseAccessException exception) {
 			logger.info(exception.getMessage());
 		}
-			
+
 		request.setAttribute("companies", listOfCompanies);
-		
+
 		this.getServletContext().getRequestDispatcher("/WEB-INF/views/addComputer.jsp").forward(request, response);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
 		try {
 			ComputerDTOViewAdd computerDTO = new ComputerDTOViewAdd();
 			computerDTO.name = request.getParameter("computerName");
 			computerDTO.introduced = request.getParameter("introduced");
 			computerDTO.discontinued = request.getParameter("discontinued");
 			computerDTO.companyID = request.getParameter("companyId");
-			
+
 			computerService.add(ComputerDTOMapper.dtoViewAddToComputer(computerDTO));
-			
-			 
+
 		} catch (Exception exception) {
 			logger.info(exception.getMessage());
-			
+
 		}
 		doGet(request, response);
 	}

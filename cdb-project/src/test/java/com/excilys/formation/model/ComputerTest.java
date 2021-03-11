@@ -8,7 +8,7 @@ import com.excilys.formation.exception.ArgumentException;
 
 public class ComputerTest {
 
-	@Test(expected=ArgumentException.class)
+	@Test(expected = ArgumentException.class)
 	public void testComputer() throws ArgumentException {
 		Computer test = new Computer.ComputerBuilder("").build();
 		assertEquals(test.getName(), "");

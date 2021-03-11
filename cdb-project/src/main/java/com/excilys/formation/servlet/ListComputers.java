@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.dto.mapper.ComputerDTOMapper;
@@ -56,9 +54,9 @@ public class ListComputers extends HttpServlet {
 			String orderValue = request.getParameter("orderByValue");
 			try {
 				if (orderValue != null) {
-					listPage.changeOrderByValue(ListPage.ORDER_BY_VALUES.valueOf(orderValue));
+					listPage.changeOrderByValue(ListPage.OrderByValues.valueOf(orderValue));
 				}
-			} catch(IllegalArgumentException exception) {
+			} catch (IllegalArgumentException exception) {
 				logger.info("Invalid value of ORDER_BY_VALUES : " + orderValue);
 			}
 			
@@ -90,7 +88,7 @@ public class ListComputers extends HttpServlet {
 			request.setAttribute("numberOfValues", numberOfValues);
 			request.setAttribute("pageIndex", listPage.getIndex());
 			request.setAttribute("maxPage", listPage.getMaxPageValue());
-			request.setAttribute("ORDER_BY_VALUES", ListPage.ORDER_BY_VALUES.values());
+			request.setAttribute("ORDER_BY_VALUES", ListPage.OrderByValues.values());
 
 		} catch (DatabaseAccessException | ArgumentException exception) {
 			logger.info(exception.getMessage());
@@ -119,6 +117,7 @@ public class ListComputers extends HttpServlet {
 		doGet(request, response);
 	}
 
+	@SuppressWarnings("unchecked")
 	private ListPage<Optional<Computer>> getPage(HttpSession session) {
 		ListPage<Optional<Computer>> listPage = null;
 		try {

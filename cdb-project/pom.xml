@@ -100,6 +100,15 @@
 			<artifactId>HikariCP</artifactId>
 			<version>${Hikari.version}</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artif act/org.inferred/freebuilder -->
+		<dependency>
+		    <groupId>org.inferred</groupId>
+		    <artifactId>freebuilder</artifactId>
+		    <version>2.7.0</version>
+    		<optional>true</optional>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

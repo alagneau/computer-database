@@ -6,7 +6,8 @@ import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.model.Computer;
 
 public abstract class ComputerValidator {
-	private ComputerValidator() {}
+	private ComputerValidator() {
+	}
 	
 	public static void validComputer(Computer computer) throws ArgumentException {
 		validDates(computer);
