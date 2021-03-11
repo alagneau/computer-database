@@ -129,6 +129,7 @@ public class ListPage<T> implements Serializable {
 					: OrderByDirection.ASCENDANT;
 		} else {
 			this.orderByValue = newOrder;
+			this.orderByDirection = OrderByDirection.ASCENDANT;
 		}
 	}
 
