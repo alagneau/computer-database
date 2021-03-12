@@ -10,8 +10,7 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.exception.ArgumentException;
@@ -21,10 +20,13 @@ import com.excilys.formation.logger.CDBLogger;
 import com.excilys.formation.model.Company;
 
 @Component
-@Scope("singleton")
 public class CompanyDAO {
-	@Autowired
 	private DataSource dataSource;
+	
+	public CompanyDAO(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+	
 	private CDBLogger logger = new CDBLogger(CompanyDAO.class);
 	private static final String COUNT = "SELECT COUNT(id) FROM company;";
 	private static final String GET_BY_ID = "SELECT id, name FROM company WHERE id=?;";
@@ -35,6 +37,9 @@ public class CompanyDAO {
 	private static final String DELETE_COMPANY_WITH_ID = "DELETE FROM company WHERE id=?;";
 
 	public int count() throws ReadDataException {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		return jdbcTemplate.queryForObject(COUNT, Integer.class);
+		/*
 		int value = 0;
 		try (Connection connection = dataSource.getConnection()) {
 			ResultSet result = connection.createStatement().executeQuery(COUNT);
@@ -45,6 +50,7 @@ public class CompanyDAO {
 			throw new ReadDataException(sqlException.getMessage());
 		}
 		return value;
+		*/
 	}
 
 	public Optional<Company> getByID(int id) throws ReadDataException, ArgumentException {

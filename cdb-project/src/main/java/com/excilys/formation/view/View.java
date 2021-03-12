@@ -331,7 +331,7 @@ public class View {
 			System.out.println("Veuillez entrer l'id de l'entreprise");
 			break;
 		case 2:
-			System.out.println("L'ordinateur a bien été créé avec l'ID :" + computerDetails.getID());
+			System.out.println("L'ordinateur a bien été créé avec l'ID :" + computerDetails.getId());
 			System.out.println("C : Créer un nouvel ordinateur | A : Accueil");
 		}
 	}
@@ -387,11 +387,11 @@ public class View {
 			default:
 				try {
 					controller.changeComputerName(computerDetails, query);
-					computerDetails = controller.getComputerByID(computerDetails.getID()).get();
+					computerDetails = controller.getComputerByID(computerDetails.getId()).get();
 					pageIndex = 6;
 				} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
 					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
-					System.out.println("ID = " + computerDetails.getID() + " nom = " + computerDetails.getName());
+					System.out.println("ID = " + computerDetails.getId() + " nom = " + computerDetails.getName());
 					pageIndex = 0;
 				}
 			}
@@ -410,7 +410,7 @@ public class View {
 			default:
 				try {
 					controller.changeComputerCompany(computerDetails, queryToInt(query));
-					computerDetails = controller.getComputerByID(computerDetails.getID()).get();
+					computerDetails = controller.getComputerByID(computerDetails.getId()).get();
 					pageIndex = 6;
 				} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
 					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
@@ -434,11 +434,11 @@ public class View {
 				if (localDate.isPresent()) {
 					try {
 						controller.changeComputerName(computerDetails, query);
-						computerDetails = controller.getComputerByID(computerDetails.getID()).get();
+						computerDetails = controller.getComputerByID(computerDetails.getId()).get();
 						pageIndex = 6;
 					} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
 						System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
-						System.out.println("ID = " + computerDetails.getID() + " nom = " + computerDetails.getName());
+						System.out.println("ID = " + computerDetails.getId() + " nom = " + computerDetails.getName());
 						pageIndex = 0;
 					}
 				} else {
@@ -524,7 +524,7 @@ public class View {
 				break;
 			case "S":
 				try {
-					controller.deleteComputer(computerDetails.getID());
+					controller.deleteComputer(computerDetails.getId());
 					pageIndex = 2;
 				} catch (DatabaseAccessException exception) {
 					System.out.println("Il y a eu une erreur à la suppression de l'ordinateur..");
@@ -557,7 +557,7 @@ public class View {
 			break;
 		case 1:
 			System.out.println("A : Accueil | R : Retour | S : Supprimer DEFINITIVEMENT");
-			System.out.println("Voici l'ordinateur à l'ID " + computerDetails.getID());
+			System.out.println("Voici l'ordinateur à l'ID " + computerDetails.getId());
 			printDetailComputer();
 			break;
 		case 2:

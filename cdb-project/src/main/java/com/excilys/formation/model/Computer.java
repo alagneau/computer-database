@@ -27,7 +27,7 @@ public class Computer {
 		return name;
 	}
 
-	public int getID() {
+	public int getId() {
 		return id;
 	}
 
@@ -43,10 +43,18 @@ public class Computer {
 		return discontinued;
 	}
 	
+	public Integer getCompanyId() {
+		Integer res = null;
+		if (company != null && company.getID() > 0) {
+			res = company.getID();
+		}
+		return res;
+	}
+	
 	@Override
 	public String toString() {
 		
-		return String.format(PRINT_FORMAT, getID(), getName(), getCompany().getName(), 
+		return String.format(PRINT_FORMAT, getId(), getName(), getCompany().getName(), 
 					GlobalConstants.localDateToString(getIntroduced()),
 					GlobalConstants.localDateToString(getDiscontinued()));
 	}

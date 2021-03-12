@@ -17,12 +17,12 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @ComponentScan(basePackages = {"com.excilys.formation.dao", "com.excilys.formation.service",
 		"com.excilys.formation.controller", "com.excilys.formation.view"})
-public class SpringConfig extends AbstractContextLoaderInitializer {
+public class SpringContextConfig extends AbstractContextLoaderInitializer {
 
 	@Override
 	protected WebApplicationContext createRootApplicationContext() {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(SpringConfig.class);
+		context.register(SpringContextConfig.class);
 		return context;
 	}
 	

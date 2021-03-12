@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.dao.CompanyDAO;
@@ -15,10 +13,13 @@ import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 
 @Component
-@Scope("singleton")
 public class CompanyService {
-	@Autowired
+	
 	private CompanyDAO companyDAO;
+	
+	private CompanyService(CompanyDAO companyDAO) {
+		this.companyDAO = companyDAO;
+	}
 	
 	public int count() throws ReadDataException {
 		return companyDAO.count();

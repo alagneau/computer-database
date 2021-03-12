@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.dao.ComputerDAO;
@@ -18,10 +16,13 @@ import com.excilys.formation.exception.UpdatingDataException;
 import com.excilys.formation.model.Computer;
 
 @Component
-@Scope("singleton")
 public class ComputerService {
-	@Autowired
+	
 	private ComputerDAO computerDAO;
+	
+	private ComputerService(ComputerDAO computerDAO) {
+		this.computerDAO = computerDAO;
+	}
 	
 	public int count() throws ReadDataException {
 		return computerDAO.count();

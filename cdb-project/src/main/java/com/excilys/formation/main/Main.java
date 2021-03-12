@@ -6,13 +6,13 @@ import java.io.InputStreamReader;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.excilys.formation.configuration.SpringConfig;
+import com.excilys.formation.configuration.SpringContextConfig;
 import com.excilys.formation.view.View;
 
 public class Main {
 	
 	public static void main(String[] args) throws IOException {
-		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class)) {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringContextConfig.class)) {
 			View view = context.getBean(View.class);
 			int status = 1;
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

@@ -17,7 +17,7 @@ public class ComputerDTOMapper {
 	
 	public static ComputerDTOViewDashboard computerToDTOViewDashboard(Computer computer) {
 		ComputerDTOViewDashboard computerDTO = new ComputerDTOViewDashboard();
-		computerDTO.id = Integer.toString(computer.getID());
+		computerDTO.id = Integer.toString(computer.getId());
 		computerDTO.name = computer.getName();
 		computerDTO.introduced = localDateToString(computer.getIntroduced());
 		computerDTO.discontinued = localDateToString(computer.getDiscontinued());
