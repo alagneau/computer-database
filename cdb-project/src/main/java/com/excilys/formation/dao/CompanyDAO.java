@@ -1,9 +1,5 @@
 package com.excilys.formation.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +8,11 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.exception.DatabaseAccessException;
 import com.excilys.formation.exception.ReadDataException;
-import com.excilys.formation.logger.CDBLogger;
+import com.excilys.formation.mapper.CompanyRowMapper;
 import com.excilys.formation.model.Company;
 
 @Component
@@ -27,7 +23,6 @@ public class CompanyDAO {
 		this.dataSource = dataSource;
 	}
 	
-	private CDBLogger logger = new CDBLogger(CompanyDAO.class);
 	private static final String COUNT = "SELECT COUNT(id) FROM company;";
 	private static final String GET_BY_ID = "SELECT id, name FROM company WHERE id=?;";
 	private static final String GET_RANGE = "SELECT id, name FROM company LIMIT ?, ?;";
@@ -39,133 +34,38 @@ public class CompanyDAO {
 	public int count() throws ReadDataException {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		return jdbcTemplate.queryForObject(COUNT, Integer.class);
-		/*
-		int value = 0;
-		try (Connection connection = dataSource.getConnection()) {
-			ResultSet result = connection.createStatement().executeQuery(COUNT);
-			result.next();
-
-			value = result.getInt(1);
-		} catch (SQLException sqlException) {
-			throw new ReadDataException(sqlException.getMessage());
-		}
-		return value;
-		*/
 	}
 
-	public Optional<Company> getByID(int id) throws ReadDataException, ArgumentException {
-		Optional<Company> company = Optional.empty();
-		try (Connection connection = dataSource.getConnection()) {
-			PreparedStatement statement = connection.prepareStatement(GET_BY_ID);
-			statement.setInt(1, id);
-			ResultSet result = statement.executeQuery();
-
-			if (result.next()) {
-				company = Optional.ofNullable(new Company.CompanyBuilder().id(id).name(result.getString("name")).build());
-			}
-		} catch (SQLException sqlException) {
-			throw new ReadDataException(sqlException.getMessage());
-		}
-		return company;
+	public Optional<Company> getByID(int id) {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		return jdbcTemplate.query(GET_BY_ID, new CompanyRowMapper(), id).get(0);
 	}
 	
 	public List<Optional<Company>> getRange(int offset, int numberOfRows) throws ReadDataException {
 		List<Optional<Company>> companies = new ArrayList<>();
-		try (Connection connection = dataSource.getConnection()) {
-
-			PreparedStatement statement = connection.prepareStatement(GET_RANGE);
-			statement.setInt(1, offset);
-			statement.setInt(2, numberOfRows);
-			ResultSet result = statement.executeQuery();
-
-			while (result.next()) {
-				try {
-					companies.add(Optional.ofNullable(new Company.CompanyBuilder()
-														.id(result.getInt("id"))
-														.name(result.getString("name"))
-														.build()));
-				} catch (ArgumentException exception) {
-					companies.add(Optional.empty());
-				}
-			}
-
-		} catch (SQLException sqlException) {
-			throw new ReadDataException(sqlException.getMessage());
-		}
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		
+		companies = jdbcTemplate.query(GET_RANGE, new CompanyRowMapper(), offset, numberOfRows);
 		return companies;
 	}
 
-	public List<Optional<Company>> getAll() throws ReadDataException {
+	public List<Optional<Company>> getAll() throws ReadDataException {	
 		List<Optional<Company>> companies = new ArrayList<>();
-		try (Connection connection = dataSource.getConnection()) {
-			ResultSet result = connection.createStatement().executeQuery(GET_ALL);
-			
-			while (result.next()) {
-				try {
-					companies.add(Optional.ofNullable(new Company.CompanyBuilder()
-									.id(result.getInt("id"))
-									.name(result.getString("name"))
-									.build()));
-				} catch (ArgumentException exception) {
-					companies.add(Optional.empty());
-				}
-			}
-			
-		} catch (SQLException sqlException) {
-			throw new ReadDataException(sqlException.getMessage());
-		}
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+		companies = jdbcTemplate.query(GET_ALL, new CompanyRowMapper());
 		return companies;
 	}
 
 	public boolean exists(int id) throws ReadDataException {
-		boolean returnValue = false;
-		try (Connection connection = dataSource.getConnection()) {
-			PreparedStatement statement = connection.prepareStatement(EXISTS);
-			statement.setInt(1, id);
-			ResultSet result = statement.executeQuery();
-
-			result.next();
-
-			returnValue = (result.getInt(1) > 0) ? true : false;
-		} catch (SQLException sqlException) {
-			throw new ReadDataException(sqlException.getMessage());
-		}
-		return returnValue;
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		return jdbcTemplate.queryForObject(EXISTS, Integer.class, id) > 0;
 	}
 	
+	@Transactional
 	public void delete(int id) throws DatabaseAccessException {
-		Connection connection = null;
-		try {
-			connection = dataSource.getConnection();
-			connection.setAutoCommit(false);
-			PreparedStatement deleteComputersStatement = connection.prepareStatement(DELETE_COMPUTER_WITH_COMPANY_ID);
-			deleteComputersStatement.setInt(1, id);
-			deleteComputersStatement.executeUpdate();
-			PreparedStatement deleteCompanyStatement = connection.prepareStatement(DELETE_COMPANY_WITH_ID);
-			deleteCompanyStatement.setInt(1, id);
-			int res = deleteCompanyStatement.executeUpdate();
-			
-			if (res < 1) {
-				throw new DatabaseAccessException("The company with the ID " + id + " is not listed in the database");
-			}
-			
-			connection.commit();
-		} catch (SQLException exception) {
-			try {
-				if (connection != null) {
-					connection.rollback();
-				}
-			} catch (SQLException exceptionRollback) {
-				logger.info(exceptionRollback.getMessage());	
-			}
-		} finally {
-			try {
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (SQLException exceptionRollback) {
-				logger.info(exceptionRollback.getMessage());	
-			}
-		}
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		jdbcTemplate.update(DELETE_COMPUTER_WITH_COMPANY_ID, id);
+		jdbcTemplate.update(DELETE_COMPANY_WITH_ID, id);
 	}
 }
