@@ -37,8 +37,4 @@ public class ComputerRowMapper implements RowMapper<Optional<Computer>> {
 	private LocalDate dateToLocalDate(Date date) {
 		return (date != null) ? date.toLocalDate() : null;
 	}
-
-	private Date localDateToDate(LocalDate localDate) {
-		return (localDate != null) ? Date.valueOf(localDate) : null;
-	}
 }

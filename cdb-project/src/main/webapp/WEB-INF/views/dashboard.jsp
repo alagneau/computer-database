@@ -1,5 +1,6 @@
-<%@ page pageEncoding="UTF-8"%>
+<%@ page pageEncoding="iso-8859-1"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,27 +16,32 @@
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <a class="navbar-brand" href="dashboard"> Application - Computer Database </a>
+	        <div class="pull-right">
+	        	<a href="?lang=en"><fmt:message key="label.lang.en" /></a>
+	        	<a href="?lang=fr"><fmt:message key="label.lang.fr" /></a>
+	        </div>
         </div>
     </header>
 
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                <c:out value="${ maxComputers } Computers found"/>
+                <c:out value="${ maxComputers } "/><fmt:message key="label.dashboard.title" />
+                
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
                     <form id="searchForm" method="GET" class="form-inline">
 
-                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
-                        <input type="submit" id="searchsubmit" value="Filter by name" class="btn btn-primary" />
+                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="<fmt:message key="label.dashboard.entry.search" />" />
+                        <input type="submit" id="searchsubmit" value="<fmt:message key="label.dashboard.button.search" />" class="btn btn-primary" />
                         <input type="hidden" name="orderByValue" value="${ORDER_BY_VALUES[0]}"/>
-                        <input type="submit" value="Order by computer ID" class="btn btn-primary"/>
+                        <input type="submit" value="<fmt:message key="label.dashboard.button.orderBy" />" class="btn btn-primary"/>
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="addComputer">Add Computer</a> 
-                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Suppress</a>
+                    <a class="btn btn-success" id="addComputer" href="addComputer"><fmt:message key="label.dashboard.button.add" /></a> 
+                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><fmt:message key="label.dashboard.button.edit" /></a>
                 </div>
             </div>
         </div>
@@ -60,7 +66,7 @@
                             </span>
                         </th>
                         <th>
-                            Computer name
+                            <fmt:message key="label.dashboard.column.name" />
                             <a href="
 								<c:url value="dashboard">
 									<c:param name="orderByValue" value="${ORDER_BY_VALUES[1]}"/>
@@ -69,7 +75,7 @@
 							</a>
                         </th>
                         <th>
-                            Introduced date
+                            <fmt:message key="label.dashboard.column.introduced" />
                             <a href="
 								<c:url value="dashboard">
 									<c:param name="orderByValue" value="${ORDER_BY_VALUES[2]}"/>
@@ -79,7 +85,7 @@
                         </th>
                         <!-- Table header for Discontinued Date -->
                         <th>
-                            Discontinued date
+                            <fmt:message key="label.dashboard.column.discontinued" />
                             <a href="
 								<c:url value="dashboard">
 									<c:param name="orderByValue" value="${ORDER_BY_VALUES[3]}"/>
@@ -89,7 +95,7 @@
                         </th>
                         <!-- Table header for Company -->
                         <th>
-                            Company
+                            <fmt:message key="label.dashboard.column.company" />
                             <a href="
 								<c:url value="dashboard">
 									<c:param name="orderByValue" value="${ORDER_BY_VALUES[4]}"/>
@@ -167,6 +173,11 @@
         </div>
 
     </footer>
+    <script type="text/javascript">
+		var strings = new Array();
+		strings['view'] = "<fmt:message key="label.dashboard.button.view" />";
+		strings['edit'] = "<fmt:message key="label.dashboard.button.edit" />";
+	</script>
 	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/dashboard.js"></script>
