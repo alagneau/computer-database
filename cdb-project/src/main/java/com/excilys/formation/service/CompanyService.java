@@ -7,9 +7,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.dao.CompanyDAO;
-import com.excilys.formation.exception.ArgumentException;
-import com.excilys.formation.exception.DatabaseAccessException;
-import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 
 @Component
@@ -21,33 +18,33 @@ public class CompanyService {
 		this.companyDAO = companyDAO;
 	}
 	
-	public int count() throws ReadDataException {
+	public int count() {
 		return companyDAO.count();
 	}
 	
-	public Optional<Company> getByID(int id) throws ReadDataException, ArgumentException {
+	public Optional<Company> getByID(int id) {
 		return companyDAO.getByID(id);
 	}
 	
-	public List<Optional<Company>> getRange(int offset, int rows) throws ReadDataException {
+	public List<Optional<Company>> getRange(int offset, int rows) {
 		List<Optional<Company>> companies = new ArrayList<>();
 		companies = companyDAO.getRange(offset, rows);
 		
 		return companies;
 	}
 	
-	public List<Optional<Company>> getAll() throws ReadDataException {
+	public List<Optional<Company>> getAll() {
 		List<Optional<Company>> companies = new ArrayList<>();
 		companies = companyDAO.getAll();
 		
 		return companies;
 	}
 	
-	public boolean exists(int id) throws ReadDataException {
+	public boolean exists(int id) {
 		return companyDAO.exists(id);
 	}
 
-	public void delete(int id) throws DatabaseAccessException {
+	public void delete(int id) {
 		companyDAO.delete(id);
 	}
 }

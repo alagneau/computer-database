@@ -5,7 +5,7 @@ import com.excilys.formation.dto.validator.ComputerDTOValidator;
 import com.excilys.formation.exception.ArgumentException;
 
 public class ComputerDTOViewEdit {
-	public String id, name, introduced, discontinued, companyID, companyName;
+	public String id, name, introduced, discontinued, companyID;
 
 	public void validate() throws ArgumentException {
 		ComputerDTOValidator.validID(id);
@@ -32,9 +32,5 @@ public class ComputerDTOViewEdit {
 
 	public String getCompanyID() {
 		return companyID;
-	}
-
-	public String getCompanyName() {
-		return companyName;
 	}
 }

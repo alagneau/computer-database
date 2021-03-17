@@ -8,12 +8,9 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.dao.ComputerDAO;
-import com.excilys.formation.exception.AddDataException;
-import com.excilys.formation.exception.ArgumentException;
-import com.excilys.formation.exception.DeletingDataException;
-import com.excilys.formation.exception.ReadDataException;
-import com.excilys.formation.exception.UpdatingDataException;
 import com.excilys.formation.model.Computer;
+
+import com.excilys.formation.model.ListPage;
 
 @Component
 public class ComputerService {
@@ -24,61 +21,63 @@ public class ComputerService {
 		this.computerDAO = computerDAO;
 	}
 	
-	public int count() throws ReadDataException {
+	public int count() {
 		return computerDAO.count();
 	}
 	
-	public int filterAndCount(String filter) throws ReadDataException {
+	public int filterAndCount(String filter) {
 		return computerDAO.filterAndCount(filter);
 	}
 	
-	public List<Optional<Computer>> getRange(int offset, int rows) throws ReadDataException, ArgumentException {
+	public List<Optional<Computer>> getRange(int offset, int rows) {
 		List<Optional<Computer>> computers = new ArrayList<>();
 		computers = computerDAO.getRange(offset, rows);
 		
 		return computers;
 	}
 	
-	public List<Optional<Computer>> getRangeServlet(int offset, int numberOfRows, String search, String orderByValue, String orderByDirection) throws ReadDataException, ArgumentException {
+	public List<Optional<Computer>> getRangeServlet(ListPage listPage) {
 		List<Optional<Computer>> computers = new ArrayList<>();
-		computers = computerDAO.getRangeServlet(offset, numberOfRows, search, orderByValue, orderByDirection);
+		computers = computerDAO.getRangeServlet(listPage.getOffset(), listPage.getNumberOfValues(),
+								listPage.getSearchValue(), listPage.getOrderByValue().getRequest(),
+								listPage.getOrderByDirection().getRequest());
 		
 		return computers;
 	}
 	
-	public Optional<Computer> getByID(int id) throws ReadDataException, ArgumentException {
+	public Optional<Computer> getByID(int id) {
 		return computerDAO.getByID(id);
 	}
 	
-	public boolean exists(int id) throws ReadDataException {
+	public boolean exists(int id) {
 		return computerDAO.exists(id);
 	}
 	
-	public int add(Computer computer) throws AddDataException {
+	public int add(Computer computer) {
 		return computerDAO.add(computer);
 	}
 	
-	public void updateName(Computer computer, String name) throws UpdatingDataException {
+	public void updateName(Computer computer, String name) {
 		computerDAO.updateName(computer, name);
 	}
 	
-	public void updateCompany(Computer computer, int companyID) throws UpdatingDataException, ArgumentException {
+	public void updateCompany(Computer computer, int companyID) {
 		computerDAO.updateCompany(computer, companyID);
 	}
 	
-	public void updateIntroduced(Computer computer, LocalDate introduced) throws UpdatingDataException {
+	public void updateIntroduced(Computer computer, LocalDate introduced) {
 		computerDAO.updateIntroduced(computer, introduced);
 	}
 	
-	public void updateDiscontinued(Computer computer, LocalDate discontinued) throws UpdatingDataException {
+	public void updateDiscontinued(Computer computer, LocalDate discontinued) {
 		computerDAO.updateDiscontinued(computer, discontinued);
 	}
 	
-	public void updateAllParameters(Computer computer) throws UpdatingDataException {
+	public void updateAllParameters(Computer computer) {
 		computerDAO.updateAllParameters(computer);
 	}
 	
-	public void delete(int computerID) throws DeletingDataException {
+	public void delete(int computerID) {
 		computerDAO.delete(computerID);
 	}
 

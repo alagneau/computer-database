@@ -1,12 +1,10 @@
 package com.excilys.formation.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.excilys.formation.logger.CDBLogger;
 
-public class ListPage<T> implements Serializable {
+public class ListPage implements Serializable {
 	private static final long serialVersionUID = 3459132960105476945L;
 
 	public enum OrderByValues {
@@ -42,25 +40,19 @@ public class ListPage<T> implements Serializable {
 	private String searchValue = "";
 	private OrderByValues orderByValue = OrderByValues.ID;
 	private OrderByDirection orderByDirection = OrderByDirection.ASCENDANT;
-	private transient List<T> values;
 
 	private transient CDBLogger logger = new CDBLogger(ListPage.class);
 
-	private ListPage(ListPageBuilder<T> builder) {
+	private ListPage(ListPageBuilder builder) {
 		this.index = builder.index;
 		this.numberOfValues = builder.numberOfValues;
 		this.maxComputers = builder.maxComputers;
 		this.searchValue = builder.searchValue;
 		updateMaxPageValue();
-		setValues(new ArrayList<>());
 	}
 
 	public int getIndex() {
 		return index;
-	}
-
-	public List<T> getValues() {
-		return values;
 	}
 
 	public String getSearchValue() {
@@ -133,34 +125,30 @@ public class ListPage<T> implements Serializable {
 		}
 	}
 
-	public void setValues(List<T> values) {
-		this.values = values;
-	}
-
 	public void setMaxComputers(int maxComputers) {
 		this.maxComputers = maxComputers;
 		updateMaxPageValue();
 	}
 
-	public static class ListPageBuilder<T> {
+	public static class ListPageBuilder {
 		private int index, numberOfValues, maxComputers;
 		private String searchValue = "";
 
 		public ListPageBuilder() {
 		}
 
-		public ListPageBuilder<T> index(int index) {
+		public ListPageBuilder index(int index) {
 			this.index = index;
 			return this;
 		}
 
-		public ListPageBuilder<T> numberOfValues(int numberOfValues) {
+		public ListPageBuilder numberOfValues(int numberOfValues) {
 			this.numberOfValues = numberOfValues;
 			return this;
 		}
 
-		public ListPage<T> build() {
-			ListPage<T> page = new ListPage<T>(this);
+		public ListPage build() {
+			ListPage page = new ListPage(this);
 
 			return page;
 		}

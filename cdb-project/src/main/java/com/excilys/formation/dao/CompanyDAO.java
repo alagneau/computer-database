@@ -10,8 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.formation.exception.DatabaseAccessException;
-import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.mapper.CompanyRowMapper;
 import com.excilys.formation.model.Company;
 
@@ -31,7 +29,7 @@ public class CompanyDAO {
 	private static final String DELETE_COMPUTER_WITH_COMPANY_ID = "DELETE FROM computer WHERE company_id=?;";
 	private static final String DELETE_COMPANY_WITH_ID = "DELETE FROM company WHERE id=?;";
 
-	public int count() throws ReadDataException {
+	public int count() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		return jdbcTemplate.queryForObject(COUNT, Integer.class);
 	}
@@ -41,7 +39,7 @@ public class CompanyDAO {
 		return jdbcTemplate.query(GET_BY_ID, new CompanyRowMapper(), id).get(0);
 	}
 	
-	public List<Optional<Company>> getRange(int offset, int numberOfRows) throws ReadDataException {
+	public List<Optional<Company>> getRange(int offset, int numberOfRows) {
 		List<Optional<Company>> companies = new ArrayList<>();
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		
@@ -49,7 +47,7 @@ public class CompanyDAO {
 		return companies;
 	}
 
-	public List<Optional<Company>> getAll() throws ReadDataException {	
+	public List<Optional<Company>> getAll() {	
 		List<Optional<Company>> companies = new ArrayList<>();
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
@@ -57,13 +55,13 @@ public class CompanyDAO {
 		return companies;
 	}
 
-	public boolean exists(int id) throws ReadDataException {
+	public boolean exists(int id) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		return jdbcTemplate.queryForObject(EXISTS, Integer.class, id) > 0;
 	}
 	
 	@Transactional
-	public void delete(int id) throws DatabaseAccessException {
+	public void delete(int id) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		jdbcTemplate.update(DELETE_COMPUTER_WITH_COMPANY_ID, id);
 		jdbcTemplate.update(DELETE_COMPANY_WITH_ID, id);

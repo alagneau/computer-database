@@ -10,10 +10,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.AbstractContextLoaderInitializer;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+@EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = {"com.excilys.formation.dao", "com.excilys.formation.service",
 		"com.excilys.formation.controller", "com.excilys.formation.view"})
@@ -28,8 +30,7 @@ public class SpringContextConfig extends AbstractContextLoaderInitializer {
 	
 	@Bean(destroyMethod = "close")
     public DataSource dataSource() throws SQLException {
-        HikariConfig config = new HikariConfig("/hikari.properties");
-        HikariDataSource dataSource = new HikariDataSource(config);
+        HikariDataSource dataSource = new HikariDataSource(new HikariConfig("/hikari.properties"));
 
         return dataSource;
     }

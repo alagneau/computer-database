@@ -56,11 +56,11 @@ public class ComputerDTOMapper {
 	
 	public static ComputerDTOViewEdit computerToDTOViewEdit(Computer computer) {
 		ComputerDTOViewEdit computerDTO = new ComputerDTOViewEdit();
+		computerDTO.id = String.valueOf(computer.getId());
 		computerDTO.name = computer.getName();
 		computerDTO.introduced = localDateToString(computer.getIntroduced());
 		computerDTO.discontinued = localDateToString(computer.getDiscontinued());
 		computerDTO.companyID = Integer.toString(computer.getCompany().getID());
-		computerDTO.companyName = computer.getCompany().getName();
 		
 		return computerDTO;
 	}
@@ -82,7 +82,6 @@ public class ComputerDTOMapper {
 						.discontinued(stringToLocalDate(computerDTO.discontinued))
 						.company(new Company.CompanyBuilder()
 								.id(companyID)
-								.name(computerDTO.getCompanyName())
 								.build())
 						.build();
 	}

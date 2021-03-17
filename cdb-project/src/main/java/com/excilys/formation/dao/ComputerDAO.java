@@ -16,11 +16,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.excilys.formation.exception.AddDataException;
-import com.excilys.formation.exception.ArgumentException;
-import com.excilys.formation.exception.DeletingDataException;
-import com.excilys.formation.exception.ReadDataException;
-import com.excilys.formation.exception.UpdatingDataException;
 import com.excilys.formation.mapper.ComputerRowMapper;
 import com.excilys.formation.model.Computer;
 
@@ -56,20 +51,17 @@ public class ComputerDAO {
 	private static final String UPDATE_ALL_PARAMETERS = "UPDATE computer SET name = :name, introduced = :introduced, discontinued = :discontinued, company_id = :companyId WHERE id = :id;";
 	private static final String DELETE = "DELETE FROM computer WHERE id = :id;";
 
-	public int count() throws ReadDataException {
+	public int count() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		return jdbcTemplate.queryForObject(NUMBER_OF_COMPUTER, Integer.class);
 	}
-	public void testArgs(String... test) {
-		
-	}
 
-	public int filterAndCount(String filter) throws ReadDataException {
+	public int filterAndCount(String filter) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		return jdbcTemplate.queryForObject(NUMBER_OF_COMPUTER_FILTERED, Integer.class, "%" + filter + "%");
 	}
 
-	public List<Optional<Computer>> getRange(int offset, int numberOfRows) throws ReadDataException, ArgumentException {
+	public List<Optional<Computer>> getRange(int offset, int numberOfRows) {
 		List<Optional<Computer>> computers = new ArrayList<>();
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		
@@ -77,7 +69,7 @@ public class ComputerDAO {
 		return computers;
 	}
 
-	public List<Optional<Computer>> getRangeServlet(int offset, int numberOfRows, String search, String orderByValue, String orderByDirection) throws ReadDataException, ArgumentException {
+	public List<Optional<Computer>> getRangeServlet(int offset, int numberOfRows, String search, String orderByValue, String orderByDirection) {
 		List<Optional<Computer>> computers = new ArrayList<>();
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		
@@ -87,17 +79,17 @@ public class ComputerDAO {
 		return computers;
 	}
 
-	public Optional<Computer> getByID(int id) throws ReadDataException, ArgumentException {
+	public Optional<Computer> getByID(int id) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		return jdbcTemplate.query(GET_BY_ID, new ComputerRowMapper(), id).get(0);
 	}
 
-	public boolean exists(int id) throws ReadDataException {
+	public boolean exists(int id) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		return jdbcTemplate.queryForObject(EXISTS, Integer.class, id) > 0;
 	}
 
-	public int add(Computer computer) throws AddDataException {
+	public int add(Computer computer) {
 		SqlParameterSource params = new BeanPropertySqlParameterSource(computer);
 		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -106,7 +98,7 @@ public class ComputerDAO {
 		
 		return keyHolder.getKey().intValue();
 	}
-	private void update1Parameter(Computer computer, String sqlQuery, String paramName, Object value) throws UpdatingDataException {
+	private void update1Parameter(Computer computer, String sqlQuery, String paramName, Object value) {
 		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		params.addValue("id", computer.getId());
@@ -115,30 +107,30 @@ public class ComputerDAO {
 		jdbcTemplate.update(sqlQuery, params);
 	}
 
-	public void updateName(Computer computer, String name) throws UpdatingDataException {
+	public void updateName(Computer computer, String name) {
 		update1Parameter(computer, UPDATE_NAME, "name", name);
 	}
 
-	public void updateCompany(Computer computer, int companyId) throws ArgumentException, UpdatingDataException {
+	public void updateCompany(Computer computer, int companyId) {
 		update1Parameter(computer, UPDATE_COMPANY, "companyId", companyId);
 	}
 
-	public void updateIntroduced(Computer computer, LocalDate introduced) throws UpdatingDataException {
+	public void updateIntroduced(Computer computer, LocalDate introduced) {
 		update1Parameter(computer, UPDATE_INTRODUCED, "introduced", introduced);
 	}
 
-	public void updateDiscontinued(Computer computer, LocalDate discontinued) throws UpdatingDataException {
+	public void updateDiscontinued(Computer computer, LocalDate discontinued) {
 		update1Parameter(computer, UPDATE_DISCONTINUED, "discontinued", discontinued);
 	}
 
-	public void updateAllParameters(Computer computer) throws UpdatingDataException {
+	public void updateAllParameters(Computer computer) {
 		SqlParameterSource params = new BeanPropertySqlParameterSource(computer);
 		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 
 		jdbcTemplate.update(UPDATE_ALL_PARAMETERS, params);
 	}
 
-	public void delete(int computerID) throws DeletingDataException {
+	public void delete(int computerID) {
 		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		params.addValue("id", computerID);
