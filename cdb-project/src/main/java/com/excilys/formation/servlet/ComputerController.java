@@ -19,8 +19,8 @@ import com.excilys.formation.service.CompanyService;
 import com.excilys.formation.service.ComputerService;
 
 @Controller
-public class ServletController {
-	private static CDBLogger logger = new CDBLogger(ServletController.class);
+public class ComputerController {
+	private static CDBLogger logger = new CDBLogger(ComputerController.class);
 
 	ComputerService computerService;
 	CompanyService companyService;
@@ -28,7 +28,7 @@ public class ServletController {
 	EditComputerParameters editComputerParameters;
 	AddComputerParameters addComputerParameters;
 
-	private ServletController(ComputerService computerService, CompanyService companyService,
+	private ComputerController(ComputerService computerService, CompanyService companyService,
 			DashboardParameters dashboardParams, AddComputerParameters addComputerParameters,
 			EditComputerParameters editComputerParameters) {
 		this.computerService = computerService;

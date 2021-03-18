@@ -1,4 +1,4 @@
-package com.excilys.formation.main;
+package com.excilys.formation.view;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.excilys.formation.configuration.SpringContextConfig;
-import com.excilys.formation.view.View;
 
 public class Main {
 	

@@ -2,7 +2,6 @@ package com.excilys.formation.servlet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
@@ -38,11 +37,11 @@ public class DashboardParameters {
 		listPage.changeSearchValue(search);
 	}
 	
-	public void setValues(List<Optional<Computer>> values) throws ArgumentException {
+	public void setValues(List<Computer> values) throws ArgumentException {
 		listComputers = new ArrayList<>();
-		for (Optional<Computer> computer : values) {
+		for (Computer computer : values) {
 			ComputerDTOViewDashboard computerDTO;
-			computerDTO = ComputerDTOMapper.computerToDTOViewDashboard(computer.orElseThrow(() -> new ArgumentException("Valeur d'un ordinateur égale à null")));
+			computerDTO = ComputerDTOMapper.computerToDTOViewDashboard(computer);
 			listComputers.add(computerDTO);
 		}
 	}

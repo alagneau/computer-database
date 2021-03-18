@@ -174,7 +174,7 @@ public class View {
 	}
 
 	private void printAllComputers() {
-		List<Optional<Computer>> computers = null;
+		List<Computer> computers = null;
 
 		try {
 			computers = controller.getComputers(offset, numberOfRows);
@@ -184,9 +184,11 @@ public class View {
 
 		System.out.println(Computer.HEADER);
 
-		for (Optional<Computer> computer : computers) {
-			if (computer.isPresent()) {
-				System.out.println(computer.get().toString());
+		for (Computer computer : computers) {
+			if (computer != null) {
+				System.out.println(computer.toString());
+			} else {
+				System.out.println("");
 			}
 		}
 
@@ -194,7 +196,7 @@ public class View {
 	}
 
 	private void printAllCompanies() {
-		List<Optional<Company>> companies = null;
+		List<Company> companies = null;
 
 		try {
 			companies = controller.getCompanies(offset, numberOfRows);
@@ -204,10 +206,10 @@ public class View {
 
 		System.out.println("Entreprise");
 
-		for (Optional<Company> company : companies) {
+		for (Company company : companies) {
 			String name;
-			if (company.isPresent()) {
-				name = company.get().getName();
+			if (company != null) {
+				name = company.getName();
 			} else {
 				name = "";
 			}

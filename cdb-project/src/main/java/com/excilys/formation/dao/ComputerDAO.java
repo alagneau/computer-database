@@ -1,7 +1,6 @@
 package com.excilys.formation.dao;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,12 +13,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-import com.excilys.formation.mapper.ComputerRowMapper;
 import com.excilys.formation.model.Computer;
 
-@Component
+@Repository
 public class ComputerDAO {
 	private DataSource dataSource;
 	
@@ -61,27 +59,23 @@ public class ComputerDAO {
 		return jdbcTemplate.queryForObject(NUMBER_OF_COMPUTER_FILTERED, Integer.class, "%" + filter + "%");
 	}
 
-	public List<Optional<Computer>> getRange(int offset, int numberOfRows) {
-		List<Optional<Computer>> computers = new ArrayList<>();
+	public List<Computer> getRange(int offset, int numberOfRows) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		
-        computers = jdbcTemplate.query(GET_RANGE, new ComputerRowMapper(), offset, numberOfRows);
-		return computers;
+        return jdbcTemplate.query(GET_RANGE, new ComputerRowMapper(), offset, numberOfRows);
 	}
 
-	public List<Optional<Computer>> getRangeServlet(int offset, int numberOfRows, String search, String orderByValue, String orderByDirection) {
-		List<Optional<Computer>> computers = new ArrayList<>();
+	public List<Computer> getRangeServlet(int offset, int numberOfRows, String search, String orderByValue, String orderByDirection) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		
 		String newRequest = new String(GET_RANGE_SERVLET).replace(":!", orderByValue + " " + orderByDirection);
 		
-        computers = jdbcTemplate.query(newRequest, new ComputerRowMapper(), "%" + search + "%", offset, numberOfRows);
-		return computers;
+        return jdbcTemplate.query(newRequest, new ComputerRowMapper(), "%" + search + "%", offset, numberOfRows);
 	}
 
 	public Optional<Computer> getByID(int id) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		return jdbcTemplate.query(GET_BY_ID, new ComputerRowMapper(), id).get(0);
+		return Optional.ofNullable(jdbcTemplate.query(GET_BY_ID, new ComputerRowMapper(), id).get(0));
 	}
 
 	public boolean exists(int id) {

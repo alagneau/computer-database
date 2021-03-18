@@ -1,18 +1,16 @@
 package com.excilys.formation.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.excilys.formation.dao.ComputerDAO;
 import com.excilys.formation.model.Computer;
-
 import com.excilys.formation.model.ListPage;
 
-@Component
+@Service
 public class ComputerService {
 	
 	private ComputerDAO computerDAO;
@@ -29,20 +27,14 @@ public class ComputerService {
 		return computerDAO.filterAndCount(filter);
 	}
 	
-	public List<Optional<Computer>> getRange(int offset, int rows) {
-		List<Optional<Computer>> computers = new ArrayList<>();
-		computers = computerDAO.getRange(offset, rows);
-		
-		return computers;
+	public List<Computer> getRange(int offset, int rows) {
+		return computerDAO.getRange(offset, rows);
 	}
 	
-	public List<Optional<Computer>> getRangeServlet(ListPage listPage) {
-		List<Optional<Computer>> computers = new ArrayList<>();
-		computers = computerDAO.getRangeServlet(listPage.getOffset(), listPage.getNumberOfValues(),
+	public List<Computer> getRangeServlet(ListPage listPage) {
+		return computerDAO.getRangeServlet(listPage.getOffset(), listPage.getNumberOfValues(),
 								listPage.getSearchValue(), listPage.getOrderByValue().getRequest(),
 								listPage.getOrderByDirection().getRequest());
-		
-		return computers;
 	}
 	
 	public Optional<Computer> getByID(int id) {

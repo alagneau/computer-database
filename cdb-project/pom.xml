@@ -17,6 +17,7 @@
 		<slf4j.version>1.7.30</slf4j.version>
 		<Hikari.version>3.4.5</Hikari.version>
 		<junit.version>4.12</junit.version>
+		<dbunit.version>2.7.0</dbunit.version>
 		<mysql.version>8.0.23</mysql.version>
 		<logback.version>1.2.3</logback.version>
 		<servlet.version>4.0.1</servlet.version>
@@ -53,6 +54,15 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.dbunit/dbunit -->
+		<dependency>
+		    <groupId>org.dbunit</groupId>
+		    <artifactId>dbunit</artifactId>
+		    <version>${dbunit.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		
 
 		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 		<dependency>

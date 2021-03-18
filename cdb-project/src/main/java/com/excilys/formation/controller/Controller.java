@@ -1,7 +1,6 @@
 package com.excilys.formation.controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,25 +35,16 @@ public class Controller {
 		return companyService.count();
 	}
 	
-	public List<Optional<Computer>> getComputers(int offset, int rows) throws ReadDataException, ArgumentException {
-		List<Optional<Computer>> computers = new ArrayList<>();
-		computers = computerService.getRange(offset, rows);
-		
-		return computers;
+	public List<Computer> getComputers(int offset, int rows) throws ReadDataException, ArgumentException {
+		return computerService.getRange(offset, rows);
 	}
 	
-	public List<Optional<Company>> getCompanies(int offset, int rows) throws ReadDataException {
-		List<Optional<Company>> companies = new ArrayList<>();
-		companies = companyService.getRange(offset, rows);
-		
-		return companies;
+	public List<Company> getCompanies(int offset, int rows) throws ReadDataException {
+		return companyService.getRange(offset, rows);
 	}
 	
-	public List<Optional<Company>> getAllCompanies() throws ReadDataException {
-		List<Optional<Company>> companies = new ArrayList<>();
-		companies = companyService.getAll();
-		
-		return companies;
+	public List<Company> getAllCompanies() throws ReadDataException {
+		return companyService.getAll();
 	}
 	
 	public Optional<Computer> getComputerByID(int id) throws ReadDataException, ArgumentException {

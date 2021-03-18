@@ -2,7 +2,6 @@ package com.excilys.formation.dto.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.excilys.formation.dto.model.CompanyDTOViewAdd;
 import com.excilys.formation.exception.ArgumentException;
@@ -26,12 +25,10 @@ public class CompanyDTOMapper {
 		return new Company.CompanyBuilder().name(companyDTO.name).id(Integer.parseInt(companyDTO.id)).build();
 	}
 
-	public static List<CompanyDTOViewAdd> companyListToDTOListViewAdd(List<Optional<Company>> companyList) {
+	public static List<CompanyDTOViewAdd> companyListToDTOListViewAdd(List<Company> companyList) {
 		List<CompanyDTOViewAdd> companyDTOList = new ArrayList<>();
-		for (Optional<Company> company : companyList) {
-			if (company.isPresent()) {
-				companyDTOList.add(companyToDTOViewAdd(company.get()));
-			}
+		for (Company company : companyList) {
+			companyDTOList.add(companyToDTOViewAdd(company));
 		}
 		return companyDTOList;
 	}

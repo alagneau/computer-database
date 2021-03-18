@@ -1,15 +1,14 @@
 package com.excilys.formation.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.excilys.formation.dao.CompanyDAO;
 import com.excilys.formation.model.Company;
 
-@Component
+@Service
 public class CompanyService {
 	
 	private CompanyDAO companyDAO;
@@ -26,18 +25,12 @@ public class CompanyService {
 		return companyDAO.getByID(id);
 	}
 	
-	public List<Optional<Company>> getRange(int offset, int rows) {
-		List<Optional<Company>> companies = new ArrayList<>();
-		companies = companyDAO.getRange(offset, rows);
-		
-		return companies;
+	public List<Company> getRange(int offset, int rows) {
+		return companyDAO.getRange(offset, rows);
 	}
 	
-	public List<Optional<Company>> getAll() {
-		List<Optional<Company>> companies = new ArrayList<>();
-		companies = companyDAO.getAll();
-		
-		return companies;
+	public List<Company> getAll() {
+		return companyDAO.getAll();
 	}
 	
 	public boolean exists(int id) {

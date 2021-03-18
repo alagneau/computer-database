@@ -1,19 +1,17 @@
 package com.excilys.formation.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.formation.mapper.CompanyRowMapper;
 import com.excilys.formation.model.Company;
 
-@Component
+@Repository
 public class CompanyDAO {
 	private DataSource dataSource;
 	
@@ -36,23 +34,19 @@ public class CompanyDAO {
 
 	public Optional<Company> getByID(int id) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		return jdbcTemplate.query(GET_BY_ID, new CompanyRowMapper(), id).get(0);
+		return Optional.ofNullable(jdbcTemplate.query(GET_BY_ID, new CompanyRowMapper(), id).get(0));
 	}
 	
-	public List<Optional<Company>> getRange(int offset, int numberOfRows) {
-		List<Optional<Company>> companies = new ArrayList<>();
+	public List<Company> getRange(int offset, int numberOfRows) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		
-		companies = jdbcTemplate.query(GET_RANGE, new CompanyRowMapper(), offset, numberOfRows);
-		return companies;
+		return jdbcTemplate.query(GET_RANGE, new CompanyRowMapper(), offset, numberOfRows);
 	}
 
-	public List<Optional<Company>> getAll() {	
-		List<Optional<Company>> companies = new ArrayList<>();
+	public List<Company> getAll() {	
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
-		companies = jdbcTemplate.query(GET_ALL, new CompanyRowMapper());
-		return companies;
+		return jdbcTemplate.query(GET_ALL, new CompanyRowMapper());
 	}
 
 	public boolean exists(int id) {
