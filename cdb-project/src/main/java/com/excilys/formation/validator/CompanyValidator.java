@@ -20,7 +20,7 @@ public abstract class CompanyValidator {
 	}
 	
 	private static void validID(Company company) throws ArgumentException {
-		int id = company.getID();
+		long id = company.getID();
 		if (id <= 0) {
 			throw new ArgumentException("Not a valid company ID : " + id);
 		}

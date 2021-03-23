@@ -15,14 +15,14 @@ public class CompanyDTOMapper {
 	public static CompanyDTOViewAdd companyToDTOViewAdd(Company company) {
 		CompanyDTOViewAdd companyDTO = new CompanyDTOViewAdd();
 		companyDTO.name = company.getName();
-		companyDTO.id = Integer.toString(company.getID());
+		companyDTO.id = Long.toString(company.getID());
 
 		return companyDTO;
 	}
 
 	public static Company dtoViewAddToCompany(CompanyDTOViewAdd companyDTO) throws ArgumentException {
 		companyDTO.validate();
-		return new Company.CompanyBuilder().name(companyDTO.name).id(Integer.parseInt(companyDTO.id)).build();
+		return new Company.CompanyBuilder().name(companyDTO.name).id(Long.parseLong(companyDTO.id)).build();
 	}
 
 	public static List<CompanyDTOViewAdd> companyListToDTOListViewAdd(List<Company> companyList) {

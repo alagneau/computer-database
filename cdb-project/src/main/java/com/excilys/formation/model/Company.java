@@ -1,11 +1,23 @@
 package com.excilys.formation.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.excilys.formation.exception.ArgumentException;
 
+@Entity
+@Table(name = "company")
 public class Company {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
+	private String name;
 
-	private final int id;
-	private final String name;
+	protected Company() {
+	}
 
 	private Company(CompanyBuilder builder) {
 		this.id = builder.id;
@@ -16,18 +28,18 @@ public class Company {
 		return name;
 	}
 
-	public int getID() {
+	public long getID() {
 		return id;
 	}
 
 	public static class CompanyBuilder {
-		private int id;
+		private long id;
 		private String name;
 
 		public CompanyBuilder() {
 		}
 
-		public CompanyBuilder id(int id) {
+		public CompanyBuilder id(long id) {
 			this.id = id;
 			return this;
 		}
@@ -48,7 +60,7 @@ public class Company {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
@@ -64,7 +76,7 @@ public class Company {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Company other = (Company) obj;
+		CompanyBuilder other = (CompanyBuilder) obj;
 		if (id != other.id) {
 			return false;
 		}

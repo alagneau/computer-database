@@ -25,8 +25,11 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan({"com.excilys.formation.servlet"})
+@ComponentScan(basePackages = {"com.excilys.formation.dao", "com.excilys.formation.service",
+		"com.excilys.formation.controller", "com.excilys.formation.view",
+		"com.excilys.formation.servlet"})
 public class SpringWebmvcConfig implements WebMvcConfigurer, WebApplicationInitializer {
+
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
@@ -71,4 +74,5 @@ public class SpringWebmvcConfig implements WebMvcConfigurer, WebApplicationIniti
         localeChangeInterceptor.setParamName("lang");
         registry.addInterceptor(localeChangeInterceptor);
     }
+	
 }

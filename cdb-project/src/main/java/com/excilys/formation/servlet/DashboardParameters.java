@@ -46,7 +46,7 @@ public class DashboardParameters {
 		}
 	}
 	
-	public void setMaxComputers(int value) {
+	public void setMaxComputers(long value) {
 		listPage.setMaxComputers(value);
 	}
 	

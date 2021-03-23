@@ -17,11 +17,11 @@ public class ComputerDTOMapper {
 	
 	public static ComputerDTOViewDashboard computerToDTOViewDashboard(Computer computer) {
 		ComputerDTOViewDashboard computerDTO = new ComputerDTOViewDashboard();
-		computerDTO.id = Integer.toString(computer.getId());
+		computerDTO.id = Long.toString(computer.getId());
 		computerDTO.name = computer.getName();
 		computerDTO.introduced = localDateToString(computer.getIntroduced());
 		computerDTO.discontinued = localDateToString(computer.getDiscontinued());
-		computerDTO.companyName = computer.getCompany().getName();
+		computerDTO.companyName = computer.getCompanyName();
 		
 		return computerDTO;
 	}
@@ -40,7 +40,9 @@ public class ComputerDTOMapper {
 		computerDTO.name = computer.getName();
 		computerDTO.introduced = localDateToString(computer.getIntroduced());
 		computerDTO.discontinued = localDateToString(computer.getDiscontinued());
-		computerDTO.companyID = Integer.toString(computer.getCompany().getID());
+		if (computer.getCompany() != null) {
+			computerDTO.companyID = String.valueOf(computer.getCompany().getID());
+		}
 		
 		return computerDTO;
 	}
@@ -60,7 +62,9 @@ public class ComputerDTOMapper {
 		computerDTO.name = computer.getName();
 		computerDTO.introduced = localDateToString(computer.getIntroduced());
 		computerDTO.discontinued = localDateToString(computer.getDiscontinued());
-		computerDTO.companyID = Integer.toString(computer.getCompany().getID());
+		if (computer.getCompany() != null) {
+			computerDTO.companyID = String.valueOf(computer.getCompany().getID());
+		}
 		
 		return computerDTO;
 	}

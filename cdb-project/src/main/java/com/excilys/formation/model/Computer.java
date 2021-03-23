@@ -2,19 +2,35 @@ package com.excilys.formation.model;
 
 import java.time.LocalDate;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.excilys.formation.constants.GlobalConstants;
 import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.validator.ComputerValidator;
 
+@Entity(name = "computer")
+@Table(name = "computer")
 public class Computer {
-	private final int id;
-	private final String name;
-	private final Company company;
-	private final LocalDate introduced, discontinued;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+	private String name;
+	@ManyToOne
+	@JoinColumn(name = "company_id")
+	private Company company;
+	private LocalDate introduced, discontinued;
 	
 	private static final String PRINT_FORMAT = "%4s | %-40s| %-40s| %-14s| %-14s";
 	public static final String HEADER = String.format(PRINT_FORMAT, "ID", "Nom", "Entreprise", "Introduced", "Discontinued");
 
+	protected Computer() { }
+	
 	private Computer(ComputerBuilder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
@@ -27,7 +43,7 @@ public class Computer {
 		return name;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -43,32 +59,32 @@ public class Computer {
 		return discontinued;
 	}
 	
-	public Integer getCompanyId() {
-		Integer res = null;
-		if (company != null && company.getID() > 0) {
-			res = company.getID();
+	public String getCompanyName() {
+		if (company != null) {
+			return company.getName();
+		} else {
+			return null;
 		}
-		return res;
 	}
 	
 	@Override
 	public String toString() {
 		
-		return String.format(PRINT_FORMAT, getId(), getName(), getCompany().getName(), 
+		return String.format(PRINT_FORMAT, getId(), getName(), getCompanyName(), 
 					GlobalConstants.localDateToString(getIntroduced()),
 					GlobalConstants.localDateToString(getDiscontinued()));
 	}
 	
 	public static class ComputerBuilder {
 		private final String name;
-		private int id;
+		private long id;
 		private Company company;
 		private LocalDate introduced, discontinued;
 		
 		public ComputerBuilder(String name) {
 			this.name = name;
 		}
-		public ComputerBuilder id(int id) {
+		public ComputerBuilder id(long id) {
 			this.id = id;
 			return this;
 		}

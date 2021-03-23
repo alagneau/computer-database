@@ -20,14 +20,16 @@ import com.excilys.formation.exception.DatabaseAccessException;
 import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
+import com.excilys.formation.model.ListPage;
 
 @Component
 @Scope("prototype")
 public class View {
+	private final int DEFAULT_NUMBER_OF_VALUES = 10;
+	private final int DEFAULT_PAGE_INDEX = 1;
 	@Autowired
 	private Controller controller;
-	private int offset = 0, numberOfRows = 10;
-	private int pageIndex = 0;
+	private ListPage listPage = new ListPage.ListPageBuilder().index(DEFAULT_PAGE_INDEX).numberOfValues(DEFAULT_NUMBER_OF_VALUES).build();
 	private Computer computerDetails = null;
 	private Company companyDetails = null;
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -117,7 +119,7 @@ public class View {
 	}
 
 	private int pageHome(String query) {
-		pageIndex = 0;
+		listPage.changePage(DEFAULT_PAGE_INDEX);
 		computerDetails = null;
 		if (query.equals("q") || query.equals("Q")) {
 			System.out.println("\n\nAu plaisir de vous revoir !");
@@ -145,39 +147,37 @@ public class View {
 	}
 
 	private void pageListDatas(String query) {
-		int maxValues = 0;
 		try {
-			maxValues = (actualPage == Page.COMPUTERS) ? controller.numberOfComputers()
-					: controller.numberOfCompanies();
+			listPage.setMaxComputers((actualPage == Page.COMPUTERS) ? (int) controller.numberOfComputers()
+					: (int) controller.numberOfCompanies());
 		} catch (DatabaseAccessException exception) {
 			System.out.println(exception.getMessage());
 		}
+		System.out.println("PAGE INDEEEEEEX : " + listPage.getIndex());
 		switch (query) {
-		case "P":
-			offset = (offset > 9) ? offset - 10 : maxValues - 10;
-			System.out.println("Infos précedentes\n");
-
-			break;
-		case "N":
-			offset = (offset + 10 >= maxValues) ? 0 : offset + 10;
-			System.out.println("Infos suivantes\n");
-			break;
-		case "A":
-			actualPage = Page.HOME;
-			offset = 0;
-			System.out.println("Switch to HOME");
-			break;
-		default:
-			printError(query);
+			case "P":
+				listPage.changePage(listPage.getIndex() - 1);
+				System.out.println("Infos précedentes\n");
+				break;
+			case "N":
+				listPage.changePage(listPage.getIndex() + 1);
+				System.out.println("Infos suivantes\n");
+				break;
+			case "A":
+				actualPage = Page.HOME;
+				System.out.println("Switch to HOME");
+				break;
+			default:
+				printError(query);
 		}
-		System.out.println("offset : " + offset);
+		System.out.println("offset : " + listPage.getOffset());
 	}
 
 	private void printAllComputers() {
 		List<Computer> computers = null;
 
 		try {
-			computers = controller.getComputers(offset, numberOfRows);
+			computers = controller.getComputerPage(listPage);
 		} catch (ReadDataException | ArgumentException exception) {
 			System.out.println(exception.getMessage());
 		}
@@ -199,7 +199,7 @@ public class View {
 		List<Company> companies = null;
 
 		try {
-			companies = controller.getCompanies(offset, numberOfRows);
+			companies = controller.getCompanyPage(listPage);
 		} catch (ReadDataException exception) {
 			System.out.println(exception.getMessage());
 		}
@@ -262,7 +262,7 @@ public class View {
 	}
 
 	private void pageCreate(String query) {
-		switch (pageIndex) {
+		switch (listPage.getIndex()) {
 		case 0:
 			if (query.equals("A")) {
 				actualPage = Page.HOME;
@@ -273,18 +273,18 @@ public class View {
 			} catch (ArgumentException exception) {
 				System.out.println(exception.getMessage());
 			}
-			pageIndex++;
+			listPage.changePage(listPage.getIndex() + 1);
 			break;
 		case 1:
 			switch (query) {
 			case "R":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			case "A":
 				actualPage = Page.HOME;
 				break;
 			default:
-				int id = queryToInt(query);
+				long id = queryToInt(query);
 				try {
 					if (controller.companyExists(id)) {
 						try {
@@ -292,7 +292,7 @@ public class View {
 									.company(new Company.CompanyBuilder().id(id).build()).build();
 							if ((id = controller.addComputer(computerDetails)) > 0) {
 								computerDetails = controller.getComputerByID(id).get();
-								pageIndex++;
+								listPage.changePage(listPage.getIndex() + 1);
 							} else {
 								System.out.println("L'ordinateur n'a pas peu être ajouté...");
 							}
@@ -313,7 +313,7 @@ public class View {
 				actualPage = Page.HOME;
 				break;
 			case "C":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			default:
 				printError(query);
@@ -323,7 +323,7 @@ public class View {
 	}
 
 	private void printCreate() {
-		switch (pageIndex) {
+		switch (listPage.getIndex()) {
 		case 0:
 			System.out.println("A : Accueil");
 			System.out.println("Veuillez entrer le nom du nouvel ordinateur");
@@ -339,14 +339,14 @@ public class View {
 	}
 
 	private void pageUpdate(String query) {
-		switch (pageIndex) {
+		switch (listPage.getIndex()) {
 		case 0:
 			try {
 				int id = Integer.parseInt(query);
 				Optional<Computer> computerOpt = controller.getComputerByID(id);
 				if (computerOpt.isPresent()) {
 					computerDetails = computerOpt.get();
-					pageIndex++;
+					listPage.changePage(listPage.getIndex() + 1);
 				} else {
 					computerDetails = null;
 					System.out.println("Cet ordinateur n'existe pas (ou plus)");
@@ -363,13 +363,13 @@ public class View {
 				printError(query);
 				break QUERY_SWITCH;
 			case "N":
-				pageIndex = 2;
+				listPage.changePage(2);
 				break QUERY_SWITCH;
 			case "C":
-				pageIndex = 3;
+				listPage.changePage(3);
 				break QUERY_SWITCH;
 			case "R":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break QUERY_SWITCH;
 			case "A":
 				actualPage = Page.HOME;
@@ -381,20 +381,20 @@ public class View {
 				System.out.println("Entrée empty");
 				break;
 			case "A":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			case "R":
-				pageIndex = 1;
+				listPage.changePage(1);
 				break;
 			default:
 				try {
 					controller.changeComputerName(computerDetails, query);
 					computerDetails = controller.getComputerByID(computerDetails.getId()).get();
-					pageIndex = 6;
+					listPage.changePage(6);
 				} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
 					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
 					System.out.println("ID = " + computerDetails.getId() + " nom = " + computerDetails.getName());
-					pageIndex = 0;
+					listPage.changePage(DEFAULT_PAGE_INDEX);
 				}
 			}
 			break;
@@ -404,19 +404,19 @@ public class View {
 				System.out.println("Entrée empty");
 				break;
 			case "A":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			case "R":
-				pageIndex = 1;
+				listPage.changePage(1);
 				break;
 			default:
 				try {
 					controller.changeComputerCompany(computerDetails, queryToInt(query));
 					computerDetails = controller.getComputerByID(computerDetails.getId()).get();
-					pageIndex = 6;
+					listPage.changePage(6);
 				} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
 					System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
-					pageIndex = 0;
+					listPage.changePage(DEFAULT_PAGE_INDEX);
 				}
 			}
 			break;
@@ -426,10 +426,10 @@ public class View {
 				System.out.println("Entrée empty");
 				break;
 			case "A":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			case "R":
-				pageIndex = 1;
+				listPage.changePage(1);
 				break;
 			default:
 				Optional<LocalDate> localDate = stringToLocalDate(query);
@@ -437,11 +437,11 @@ public class View {
 					try {
 						controller.changeComputerName(computerDetails, query);
 						computerDetails = controller.getComputerByID(computerDetails.getId()).get();
-						pageIndex = 6;
+						listPage.changePage(6);
 					} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
 						System.out.println("Une erreur a été rencontrée : " + exception.getMessage());
 						System.out.println("ID = " + computerDetails.getId() + " nom = " + computerDetails.getName());
-						pageIndex = 0;
+						listPage.changePage(DEFAULT_PAGE_INDEX);
 					}
 				} else {
 					System.out.println("La date écrite n'est pas au bon format :/");
@@ -457,7 +457,7 @@ public class View {
 				actualPage = Page.HOME;
 				break;
 			case "C":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			default:
 				printError(query);
@@ -466,7 +466,7 @@ public class View {
 	}
 
 	private void printUpdate() {
-		switch (pageIndex) {
+		switch (listPage.getIndex()) {
 		case 0:
 			System.out.println("Veuillez entrer l'id de l'ordinateur à modifier");
 			break;
@@ -499,7 +499,7 @@ public class View {
 	}
 
 	private void pageDeleteComputer(String query) {
-		switch (pageIndex) {
+		switch (listPage.getIndex()) {
 		case 0:
 			if (query.equals("A")) {
 				actualPage = Page.HOME;
@@ -507,7 +507,7 @@ public class View {
 				try {
 					if (controller.computerExists(queryToInt(query))) {
 						computerDetails = controller.getComputerByID(queryToInt(query)).get();
-						pageIndex++;
+						listPage.changePage(listPage.getIndex() + 1);
 					} else {
 						System.out.println("L'ordinateur " + query + " n'existe pas.");
 					}
@@ -522,15 +522,15 @@ public class View {
 				actualPage = Page.HOME;
 				break;
 			case "R":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			case "S":
 				try {
 					controller.deleteComputer(computerDetails.getId());
-					pageIndex = 2;
+					listPage.changePage(2);
 				} catch (DatabaseAccessException exception) {
 					System.out.println("Il y a eu une erreur à la suppression de l'ordinateur..");
-					pageIndex = 0;
+					listPage.changePage(DEFAULT_PAGE_INDEX);
 				}
 				break;
 			default:
@@ -543,7 +543,7 @@ public class View {
 				actualPage = Page.HOME;
 				break;
 			case "S":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			default:
 				printError(query);
@@ -552,7 +552,7 @@ public class View {
 	}
 
 	private void printDeleteComputer() {
-		switch (pageIndex) {
+		switch (listPage.getIndex()) {
 		case 0:
 			System.out.println("A : Accueil");
 			System.out.println("Entrez l'ID de l'ordinateur que vous souhaitez supprimer");
@@ -569,7 +569,7 @@ public class View {
 	}
 
 	private void pageDeleteCompany(String query) {
-		switch (pageIndex) {
+		switch (listPage.getIndex()) {
 		case 0:
 			if (query.equals("A")) {
 				actualPage = Page.HOME;
@@ -577,7 +577,7 @@ public class View {
 				try {
 					if (controller.companyExists(queryToInt(query))) {
 						companyDetails = controller.getCompanyByID(queryToInt(query)).get();
-						pageIndex++;
+						listPage.changePage(listPage.getIndex() + 1);
 					} else {
 						System.out.println("L'entreprise n°" + query + " n'existe pas.");
 					}
@@ -592,15 +592,15 @@ public class View {
 				actualPage = Page.HOME;
 				break;
 			case "R":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			case "S":
 				try {
 					controller.deleteCompany(companyDetails.getID());
-					pageIndex = 2;
+					listPage.changePage(2);
 				} catch (DatabaseAccessException exception) {
 					System.out.println("Il y a eu une erreur à la suppression de l'entreprise..");
-					pageIndex = 0;
+					listPage.changePage(DEFAULT_PAGE_INDEX);
 				}
 				break;
 			default:
@@ -613,7 +613,7 @@ public class View {
 				actualPage = Page.HOME;
 				break;
 			case "S":
-				pageIndex = 0;
+				listPage.changePage(DEFAULT_PAGE_INDEX);
 				break;
 			default:
 				printError(query);
@@ -622,7 +622,7 @@ public class View {
 	}
 
 	private void printDeleteCompany() {
-		switch (pageIndex) {
+		switch (listPage.getIndex()) {
 		case 0:
 			System.out.println("A : Accueil");
 			System.out.println("Entrez l'ID de l'entreprise que vous souhaitez supprimer");

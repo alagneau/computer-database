@@ -16,6 +16,7 @@ import com.excilys.formation.exception.ReadDataException;
 import com.excilys.formation.exception.UpdatingDataException;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
+import com.excilys.formation.model.ListPage;
 import com.excilys.formation.service.CompanyService;
 import com.excilys.formation.service.ComputerService;
 
@@ -27,43 +28,43 @@ public class Controller {
 	@Autowired
 	private ComputerService computerService;
 	
-	public int numberOfComputers() throws ReadDataException {
+	public long numberOfComputers() throws ReadDataException {
 		return computerService.count();
 	}
 	
-	public int numberOfCompanies() throws ReadDataException {
+	public long numberOfCompanies() throws ReadDataException {
 		return companyService.count();
 	}
 	
-	public List<Computer> getComputers(int offset, int rows) throws ReadDataException, ArgumentException {
-		return computerService.getRange(offset, rows);
+	public List<Computer> getComputerPage(ListPage listPage) throws ReadDataException, ArgumentException {
+		return computerService.getRange(listPage);
 	}
 	
-	public List<Company> getCompanies(int offset, int rows) throws ReadDataException {
-		return companyService.getRange(offset, rows);
+	public List<Company> getCompanyPage(ListPage listPage) throws ReadDataException {
+		return companyService.getRange(listPage);
 	}
 	
 	public List<Company> getAllCompanies() throws ReadDataException {
 		return companyService.getAll();
 	}
 	
-	public Optional<Computer> getComputerByID(int id) throws ReadDataException, ArgumentException {
+	public Optional<Computer> getComputerByID(long id) throws ReadDataException, ArgumentException {
 		return computerService.getByID(id);
 	}
 	
-	public Optional<Company> getCompanyByID(int id) throws ReadDataException, ArgumentException {
+	public Optional<Company> getCompanyByID(long id) throws ReadDataException, ArgumentException {
 		return companyService.getByID(id);
 	}
 	
-	public boolean computerExists(int id) throws ReadDataException {
+	public boolean computerExists(long id) throws ReadDataException {
 		return computerService.exists(id);
 	}
 	
-	public boolean companyExists(int id) throws ReadDataException {
+	public boolean companyExists(long id) throws ReadDataException {
 		return companyService.exists(id);
 	}
 	
-	public int addComputer(Computer computer) throws AddDataException {
+	public long addComputer(Computer computer) throws AddDataException {
 		return computerService.add(computer);
 	}
 	
@@ -83,11 +84,11 @@ public class Controller {
 		computerService.updateDiscontinued(computer, discontinued);
 	}
 	
-	public void deleteComputer(int computerID) throws DeletingDataException {
+	public void deleteComputer(long computerID) throws DeletingDataException {
 		computerService.delete(computerID);
 	}
 	
-	public void deleteCompany(int companyID) throws DatabaseAccessException {
+	public void deleteCompany(long companyID) throws DatabaseAccessException {
 		companyService.delete(companyID);
 	}
 }

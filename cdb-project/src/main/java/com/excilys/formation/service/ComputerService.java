@@ -4,73 +4,82 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.excilys.formation.dao.ComputerDAO;
+import com.excilys.formation.dao.ComputerRepository;
+import com.excilys.formation.logger.CDBLogger;
 import com.excilys.formation.model.Computer;
 import com.excilys.formation.model.ListPage;
 
 @Service
 public class ComputerService {
+	CDBLogger logger = new CDBLogger(ComputerService.class);
 	
-	private ComputerDAO computerDAO;
+	private ComputerRepository computerRepository;
 	
-	private ComputerService(ComputerDAO computerDAO) {
-		this.computerDAO = computerDAO;
+	public ComputerService(ComputerRepository computerRepository) {
+		this.computerRepository = computerRepository;
 	}
 	
-	public int count() {
-		return computerDAO.count();
+	public long count() {
+		return computerRepository.count();
 	}
 	
-	public int filterAndCount(String filter) {
-		return computerDAO.filterAndCount(filter);
+	public long filterAndCount(String filter) {
+		return computerRepository.countByNameContaining(filter);
 	}
 	
-	public List<Computer> getRange(int offset, int rows) {
-		return computerDAO.getRange(offset, rows);
+	public List<Computer> getRange(ListPage listPage) {
+		return computerRepository.findAll(PageRequest.of(listPage.getIndex() - 1, listPage.getNumberOfValues())).getContent();
 	}
 	
 	public List<Computer> getRangeServlet(ListPage listPage) {
-		return computerDAO.getRangeServlet(listPage.getOffset(), listPage.getNumberOfValues(),
-								listPage.getSearchValue(), listPage.getOrderByValue().getRequest(),
-								listPage.getOrderByDirection().getRequest());
+		return computerRepository.findAllByNameContaining(listPage.getSearchValue(),
+												PageRequest.of(listPage.getIndex() - 1,
+													listPage.getNumberOfValues(),
+													listPage.getOrderByDirection(),
+													listPage.getOrderByValue().getRequest())
+												);
 	}
 	
-	public Optional<Computer> getByID(int id) {
-		return computerDAO.getByID(id);
+	public Optional<Computer> getByID(long id) {
+		return computerRepository.findById(id);
 	}
 	
-	public boolean exists(int id) {
-		return computerDAO.exists(id);
+	public boolean exists(long id) {
+		return computerRepository.existsById(id);
 	}
 	
-	public int add(Computer computer) {
-		return computerDAO.add(computer);
+	@Transactional
+	public long add(Computer computer) {
+		return computerRepository.save(computer).getId();
 	}
 	
 	public void updateName(Computer computer, String name) {
-		computerDAO.updateName(computer, name);
+		computerRepository.updateName(computer.getId(), name);
 	}
 	
-	public void updateCompany(Computer computer, int companyID) {
-		computerDAO.updateCompany(computer, companyID);
+	public void updateCompany(Computer computer, long companyID) {
+		computerRepository.updateCompany(computer.getId(), companyID);
 	}
 	
 	public void updateIntroduced(Computer computer, LocalDate introduced) {
-		computerDAO.updateIntroduced(computer, introduced);
+		computerRepository.updateIntroduced(computer.getId(), introduced);
 	}
 	
 	public void updateDiscontinued(Computer computer, LocalDate discontinued) {
-		computerDAO.updateDiscontinued(computer, discontinued);
+		computerRepository.updateDiscontinued(computer.getId(), discontinued);
 	}
 	
 	public void updateAllParameters(Computer computer) {
-		computerDAO.updateAllParameters(computer);
+		computerRepository.save(computer);
 	}
 	
-	public void delete(int computerID) {
-		computerDAO.delete(computerID);
+	public void delete(long computerID) {
+		computerRepository.deleteById(computerID);
 	}
-
+	
 }

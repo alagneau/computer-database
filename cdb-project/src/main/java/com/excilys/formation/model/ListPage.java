@@ -2,14 +2,16 @@ package com.excilys.formation.model;
 
 import java.io.Serializable;
 
+import org.springframework.data.domain.Sort.Direction;
+
 import com.excilys.formation.logger.CDBLogger;
 
 public class ListPage implements Serializable {
 	private static final long serialVersionUID = 3459132960105476945L;
 
 	public enum OrderByValues {
-		ID("computer.id"), COMPUTER("computer.name"), INTRODUCED("computer.introduced"),
-		DISCONTINUED("computer.discontinued"), COMPANY("company.name");
+		ID("id"), COMPUTER("name"), INTRODUCED("introduced"),
+		DISCONTINUED("discontinued"), COMPANY("company.name");
 
 		private String sqlRequest;
 
@@ -22,24 +24,11 @@ public class ListPage implements Serializable {
 		}
 	}
 
-	public enum OrderByDirection {
-		ASCENDANT("ASC"), DESCENDANT("DESC");
-
-		public String sqlRequest;
-
-		OrderByDirection(String value) {
-			this.sqlRequest = value;
-		}
-
-		public String getRequest() {
-			return sqlRequest;
-		}
-	}
-
-	private int index, numberOfValues, maxPageValue, maxComputers;
+	private int index, numberOfValues, maxPageValue;
+	private long maxComputers;
 	private String searchValue = "";
 	private OrderByValues orderByValue = OrderByValues.ID;
-	private OrderByDirection orderByDirection = OrderByDirection.ASCENDANT;
+	private Direction orderByDirection = Direction.ASC;
 
 	private transient CDBLogger logger = new CDBLogger(ListPage.class);
 
@@ -63,7 +52,7 @@ public class ListPage implements Serializable {
 		return orderByValue;
 	}
 
-	public OrderByDirection getOrderByDirection() {
+	public Direction getOrderByDirection() {
 		return orderByDirection;
 	}
 
@@ -76,7 +65,7 @@ public class ListPage implements Serializable {
 		return numberOfValues;
 	}
 
-	public int getMaxComputers() {
+	public long getMaxComputers() {
 		return this.maxComputers;
 	}
 
@@ -86,7 +75,13 @@ public class ListPage implements Serializable {
 
 	public void changePage(int pageIndex) {
 		if (pageIndex > 0) {
-			this.index = pageIndex;
+			if (pageIndex > maxPageValue) {
+				index = 1;
+			} else {
+				index = pageIndex;
+			}
+		} else {
+			index = maxPageValue;
 		}
 	}
 
@@ -117,15 +112,15 @@ public class ListPage implements Serializable {
 	public void changeOrderByValue(OrderByValues newOrder) {
 		changePage(1);
 		if (this.orderByValue == newOrder) {
-			orderByDirection = (orderByDirection == OrderByDirection.ASCENDANT) ? OrderByDirection.DESCENDANT
-					: OrderByDirection.ASCENDANT;
+			orderByDirection = (orderByDirection == Direction.ASC) ? Direction.DESC
+					: Direction.ASC;
 		} else {
 			this.orderByValue = newOrder;
-			this.orderByDirection = OrderByDirection.ASCENDANT;
+			this.orderByDirection = Direction.ASC;
 		}
 	}
 
-	public void setMaxComputers(int maxComputers) {
+	public void setMaxComputers(long maxComputers) {
 		this.maxComputers = maxComputers;
 		updateMaxPageValue();
 	}
@@ -156,7 +151,7 @@ public class ListPage implements Serializable {
 
 	private void updateMaxPageValue() {
 		try {
-			maxPageValue = (maxComputers - 1) / numberOfValues + 1;
+			maxPageValue = ((int) maxComputers - 1) / numberOfValues + 1;
 		} catch (ArithmeticException exception) {
 			logger.info("ListPage.updateMaxPageValue" + exception.getMessage());
 			maxPageValue = 1;
