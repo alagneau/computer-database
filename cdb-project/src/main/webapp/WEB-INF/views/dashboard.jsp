@@ -35,6 +35,8 @@
 
                         <input type="search" id="searchbox" name="search" class="form-control" placeholder="<fmt:message key="label.dashboard.entry.search" />" />
                         <input type="submit" id="searchsubmit" value="<fmt:message key="label.dashboard.button.search" />" class="btn btn-primary" />
+                    </form>
+                    <form id="OrderByIDForm" method="GET" class="form-inline">
                         <input type="hidden" name="orderByValue" value="${ORDER_BY_VALUES[0]}"/>
                         <input type="submit" value="<fmt:message key="label.dashboard.button.orderBy" />" class="btn btn-primary"/>
                     </form>
