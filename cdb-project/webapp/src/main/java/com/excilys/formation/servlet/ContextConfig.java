@@ -9,6 +9,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -26,7 +27,8 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = {"com.excilys.formation.servlet", "com.excilys.formation.service"})
+@ComponentScan(basePackages = {"com.excilys.formation.servlet"})
+@Import(com.excilys.formation.service.ContextConfig.class)
 public class ContextConfig implements WebMvcConfigurer, WebApplicationInitializer {
 
     @Override

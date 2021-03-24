@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.excilys.formation.dao.ComputerRepository;
 import com.excilys.formation.logger.CDBLogger;
+import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 import com.excilys.formation.model.ListPage;
 
@@ -62,8 +63,8 @@ public class ComputerService {
 		computerRepository.updateName(computer.getId(), name);
 	}
 	
-	public void updateCompany(Computer computer, long companyID) {
-		computerRepository.updateCompany(computer.getId(), companyID);
+	public void updateCompany(Computer computer, Company company) {
+		computerRepository.updateCompany(computer.getId(), company);
 	}
 	
 	public void updateIntroduced(Computer computer, LocalDate introduced) {

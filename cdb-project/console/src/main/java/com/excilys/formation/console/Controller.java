@@ -1,4 +1,4 @@
-package com.excilys.formation.controller;
+package com.excilys.formation.console;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -72,8 +72,8 @@ public class Controller {
 		computerService.updateName(computer, name);
 	}
 	
-	public void changeComputerCompany(Computer computer, int companyID) throws UpdatingDataException, ArgumentException {
-		computerService.updateCompany(computer, companyID);
+	public void changeComputerCompany(Computer computer, long companyId) throws UpdatingDataException, ArgumentException {
+		computerService.updateCompany(computer, companyService.getByID(companyId).get());
 	}
 	
 	public void changeComputerIntroduced(Computer computer, LocalDate introduced) throws UpdatingDataException {

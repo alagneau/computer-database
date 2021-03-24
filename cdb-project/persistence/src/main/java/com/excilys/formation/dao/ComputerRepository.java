@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
 @Transactional
@@ -23,8 +24,8 @@ public interface ComputerRepository extends JpaRepository<Computer, Long> {
 	void updateName(@Param("id") long computerId, @Param("name") String name);
 	
 	@Modifying
-	@Query("UPDATE computer c set c.company = :companyId WHERE c.id = :id")
-	void updateCompany(@Param("id") long computerId, @Param("companyId") long companyId);
+	@Query("UPDATE computer c set c.company = :company WHERE c.id = :id")
+	void updateCompany(@Param("id") long computerId, @Param("company") Company company);
 	
 	@Modifying
 	@Query("UPDATE computer c set c.introduced = :introduced WHERE c.id = :id")
