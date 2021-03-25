@@ -18,6 +18,7 @@ import com.excilys.formation.model.Computer;
 public interface ComputerRepository extends JpaRepository<Computer, Long> {
 	long countByNameContaining(String name);
 	List<Computer> findAllByNameContaining(String name, Pageable pageable);
+	void deleteByCompany(Company company);
 	
 	@Modifying
 	@Query("UPDATE computer c set c.name = :name WHERE c.id = :id")

@@ -88,7 +88,7 @@ public class Controller {
 		computerService.delete(computerID);
 	}
 	
-	public void deleteCompany(long companyID) throws DatabaseAccessException {
-		companyService.delete(companyID);
+	public void deleteCompany(Company company) throws DatabaseAccessException {
+		companyService.delete(company);
 	}
 }

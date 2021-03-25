@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.excilys.formation.dao.CompanyRepository;
+import com.excilys.formation.dao.ComputerRepository;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.ListPage;
 
@@ -16,9 +17,11 @@ import com.excilys.formation.model.ListPage;
 public class CompanyService {
 	
 	private CompanyRepository companyRepository;
+	private ComputerRepository computerRepository;
 	
-	private CompanyService(CompanyRepository companyRepository) {
+	private CompanyService(CompanyRepository companyRepository, ComputerRepository computerRepository) {
 		this.companyRepository = companyRepository;
+		this.computerRepository = computerRepository;
 	}
 	
 	public long count() {
@@ -42,7 +45,8 @@ public class CompanyService {
 	}
 
 	@Transactional
-	public void delete(long id) {
-		companyRepository.deleteById(id);
+	public void delete(Company company) {
+		computerRepository.deleteByCompany(company);
+		companyRepository.delete(company);
 	}
 }

@@ -596,8 +596,8 @@ public class View {
 				break;
 			case "S":
 				try {
-					controller.deleteCompany(companyDetails.getID());
-					listPage.changePage(2);
+					controller.deleteCompany(companyDetails);
+					sousMenu = 2;
 				} catch (DatabaseAccessException exception) {
 					System.out.println("Il y a eu une erreur à la suppression de l'entreprise..");
 					sousMenu = DEFAULT_PAGE_MENU;
