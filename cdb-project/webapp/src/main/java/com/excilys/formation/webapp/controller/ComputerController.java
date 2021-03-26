@@ -1,4 +1,4 @@
-package com.excilys.formation.servlet;
+package com.excilys.formation.webapp.controller;
 
 import java.util.Arrays;
 
@@ -17,6 +17,9 @@ import com.excilys.formation.logger.CDBLogger;
 import com.excilys.formation.model.ListPage;
 import com.excilys.formation.service.CompanyService;
 import com.excilys.formation.service.ComputerService;
+import com.excilys.formation.webapp.controller.data.AddComputerParameters;
+import com.excilys.formation.webapp.controller.data.DashboardParameters;
+import com.excilys.formation.webapp.controller.data.EditComputerParameters;
 
 @Controller
 public class ComputerController {

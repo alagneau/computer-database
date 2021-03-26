@@ -1,4 +1,4 @@
-package com.excilys.formation.servlet;
+package com.excilys.formation.webapp.controller.data;
 
 import java.util.ArrayList;
 import java.util.List;

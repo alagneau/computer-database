@@ -12,6 +12,9 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>5.3.4</spring.version>
+		<spring-security.version>5.4.5</spring-security.version>
+		<hibernate.version>5.4.10.Final</hibernate.version>
+		<spring-jpa.version>2.4.6</spring-jpa.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<Hikari.version>3.4.5</Hikari.version>
 		<junit.version>4.12</junit.version>
@@ -21,8 +24,6 @@
 		<servlet.version>4.0.1</servlet.version>
 		<annotation.version>1.3.2</annotation.version>
 		<jstl.version>1.2</jstl.version>
-		<hibernate.version>5.4.10.Final</hibernate.version>
-		<spring-jpa.version>2.4.6</spring-jpa.version>
 	</properties>
 
 	<dependencies>
@@ -140,6 +141,28 @@
 			<artifactId>spring-data-jpa</artifactId>
 			<version>${spring-jpa.version}</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-core</artifactId>
+		    <version>${spring-security.version}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web -->
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-web</artifactId>
+		    <version>${spring-security.version}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-config -->
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-config</artifactId>
+		    <version>${spring-security.version}</version>
+		</dependency>
+		
 	</dependencies>
 	
 	<build>

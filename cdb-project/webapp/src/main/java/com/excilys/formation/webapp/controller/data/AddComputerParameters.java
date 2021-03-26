@@ -1,4 +1,4 @@
-package com.excilys.formation.servlet;
+package com.excilys.formation.webapp.controller.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.formation.dto.model.CompanyDTOViewAdd;
 import com.excilys.formation.dto.model.ComputerDTOViewAdd;
+
 
 @Component
 @SessionScope

@@ -27,7 +27,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
-                    <h1><fmt:message key="label.editComputer.title" /></h1>
+                    <h1><fmt:message key="label.addComputer.title" /></h1>
                     <form action="addComputer" method="POST" onsubmit="return validateDates(computerName.value, introduced.value, discontinued.value, companyId.value)">
                         <fieldset>
                             <div class="form-group">

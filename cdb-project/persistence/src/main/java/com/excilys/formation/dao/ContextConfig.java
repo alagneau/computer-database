@@ -15,9 +15,6 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.web.context.AbstractContextLoaderInitializer;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -25,20 +22,13 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(basePackages = {"com.excilys.formation.dao"})
 @Configuration
 @ComponentScan(basePackages = {"com.excilys.formation.dao"})
-public class ContextConfig extends AbstractContextLoaderInitializer {
+public class ContextConfig {
 	
 	@Bean(destroyMethod = "close")
     public static DataSource dataSource() throws SQLException {
         HikariDataSource dataSource = new HikariDataSource(new HikariConfig("/hikari.properties"));
         return dataSource;
     }
-
-	@Override
-	protected WebApplicationContext createRootApplicationContext() {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(ContextConfig.class);
-		return context;
-	}
 
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws SQLException {

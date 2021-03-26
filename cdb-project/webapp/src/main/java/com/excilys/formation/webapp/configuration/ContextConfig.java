@@ -1,5 +1,4 @@
-package com.excilys.formation.servlet;
-
+package com.excilys.formation.webapp.configuration;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -15,6 +14,7 @@ import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -23,11 +23,10 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = {"com.excilys.formation.servlet"})
+@ComponentScan(basePackages = {"com.excilys.formation.webapp"})
 @Import(com.excilys.formation.service.ContextConfig.class)
 public class ContextConfig implements WebMvcConfigurer, WebApplicationInitializer {
 
@@ -36,7 +35,6 @@ public class ContextConfig implements WebMvcConfigurer, WebApplicationInitialize
         configurer.enable();
     }
 
-    
 	@Override
 	public void onStartup(ServletContext sc) throws ServletException {
         AnnotationConfigWebApplicationContext context =  new AnnotationConfigWebApplicationContext();
@@ -49,7 +47,7 @@ public class ContextConfig implements WebMvcConfigurer, WebApplicationInitialize
     }
 
     @Bean
-    public UrlBasedViewResolver viewResolver() {
+    public ViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setPrefix("/WEB-INF/views/");
@@ -57,9 +55,9 @@ public class ContextConfig implements WebMvcConfigurer, WebApplicationInitialize
         return viewResolver;
     }
     
-    @Bean("messageSource")
+    @Bean
     public MessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    	ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasenames("languages/message");
         //messageSource.setDefaultEncoding("iso-8859-1");
         return messageSource;
