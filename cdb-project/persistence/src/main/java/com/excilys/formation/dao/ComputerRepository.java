@@ -20,7 +20,7 @@ public interface ComputerRepository extends JpaRepository<ComputerDTODatabase, L
 	ComputerDTODatabase findById(long id);
 	
 	List<ComputerDTODatabase> findAllByNameContaining(String name, Pageable pageable);
-	void deleteByCompany(long id);
+	void deleteByCompany(CompanyDTODatabase id);
 	
 	@Modifying
 	@Query("UPDATE computer c set c.name = :name WHERE c.id = :id")

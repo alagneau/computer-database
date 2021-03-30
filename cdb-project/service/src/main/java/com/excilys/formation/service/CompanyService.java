@@ -58,7 +58,7 @@ public class CompanyService {
 
 	@Transactional
 	public void delete(long id) {
-		computerRepository.deleteByCompany(id);
+		computerRepository.deleteByCompany(companyRepository.findById(id));
 		companyRepository.deleteById(id);
 	}
 }
