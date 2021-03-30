@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.excilys.formation.dto.model.CompanyDTOViewAdd;
+import com.excilys.formation.dto.model.CompanyDTOView;
 import com.excilys.formation.dto.model.ComputerDTOViewEdit;
 
 @Component
@@ -15,7 +15,7 @@ import com.excilys.formation.dto.model.ComputerDTOViewEdit;
 public class EditComputerParameters {
 	private ModelAndView modelAndView;
 	private ComputerDTOViewEdit computer;
-	private List<CompanyDTOViewAdd> companyList;
+	private List<CompanyDTOView> companyList;
 	
 	public EditComputerParameters() {
 		this.modelAndView = new ModelAndView("editComputer");
@@ -31,11 +31,11 @@ public class EditComputerParameters {
 		this.computer = computer;
 	}
 	
-	public List<CompanyDTOViewAdd> getCompanyList() {
+	public List<CompanyDTOView> getCompanyList() {
 		return companyList;
 	}
 	
-	public void setCompanyList(List<CompanyDTOViewAdd> companyList) {
+	public void setCompanyList(List<CompanyDTOView> companyList) {
 		this.companyList = companyList;
 	}
 

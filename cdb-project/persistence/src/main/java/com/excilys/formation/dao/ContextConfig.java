@@ -34,7 +34,7 @@ public class ContextConfig {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws SQLException {
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		em.setDataSource(dataSource());
-		em.setPackagesToScan("com.excilys.formation.model", "com.excilys.formation.dao");
+		em.setPackagesToScan("com.excilys.formation.model", "com.excilys.formation.dto", "com.excilys.formation.dao");
 		
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		em.setJpaVendorAdapter(vendorAdapter);

@@ -2,12 +2,15 @@ package com.excilys.formation.webapp.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.excilys.formation.webapp.configuration.MyBasic;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -17,6 +20,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    MyBasic myBasic;
  
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -38,8 +43,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
         .mvcMatchers("/login")
         	.permitAll()
+        .mvcMatchers(HttpMethod.DELETE, "/**")
+        	.hasRole("ADMIN")
         .mvcMatchers("/**")
             .hasAnyRole("ADMIN", "USER")
+            .and()
+        .httpBasic()
+        	.realmName("realmForCurl")
+        	.authenticationEntryPoint(myBasic)
             .and()
         .formLogin()
             .loginPage("/login")

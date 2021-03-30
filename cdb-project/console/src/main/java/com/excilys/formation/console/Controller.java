@@ -72,8 +72,8 @@ public class Controller {
 		computerService.updateName(computer, name);
 	}
 	
-	public void changeComputerCompany(Computer computer, long companyId) throws UpdatingDataException, ArgumentException {
-		computerService.updateCompany(computer, companyService.getByID(companyId).get());
+	public void changeComputerCompany(Computer computer, Company company) throws UpdatingDataException, ArgumentException {
+		computerService.updateCompany(computer, company);
 	}
 	
 	public void changeComputerIntroduced(Computer computer, LocalDate introduced) throws UpdatingDataException {
@@ -84,11 +84,11 @@ public class Controller {
 		computerService.updateDiscontinued(computer, discontinued);
 	}
 	
-	public void deleteComputer(long computerID) throws DeletingDataException {
+	public void deleteComputer(List<Long> computerID) throws DeletingDataException {
 		computerService.delete(computerID);
 	}
 	
 	public void deleteCompany(Company company) throws DatabaseAccessException {
-		companyService.delete(company);
+		companyService.delete(company.getId());
 	}
 }

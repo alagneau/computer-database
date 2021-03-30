@@ -16,6 +16,11 @@
     		<artifactId>core</artifactId>
     		<version>${project.version}</version>
     	</dependency>
+    	<dependency>
+        	<groupId>com.excilys.formation</groupId>
+    		<artifactId>binding</artifactId>
+    		<version>${project.version}</version>
+    	</dependency>
     </dependencies>
 
 </project>

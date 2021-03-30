@@ -3,6 +3,7 @@ package com.excilys.formation.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -10,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.excilys.formation.dao.ComputerRepository;
+import com.excilys.formation.dto.mapper.CompanyDTOMapper;
+import com.excilys.formation.dto.mapper.ComputerDTOMapper;
 import com.excilys.formation.logger.CDBLogger;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
@@ -35,7 +38,8 @@ public class ComputerService {
 	}
 	
 	public List<Computer> getRange(ListPage listPage) {
-		return computerRepository.findAll(PageRequest.of(listPage.getIndex() - 1, listPage.getNumberOfValues())).getContent();
+		return computerRepository.findAll(PageRequest.of(listPage.getIndex() - 1, listPage.getNumberOfValues())).getContent()
+				.stream().map(ComputerDTOMapper::dtoDatabaseToComputer).collect(Collectors.toList());
 	}
 	
 	public List<Computer> getRangeServlet(ListPage listPage) {
@@ -44,11 +48,11 @@ public class ComputerService {
 													listPage.getNumberOfValues(),
 													listPage.getOrderByDirection(),
 													listPage.getOrderByValue().getRequest())
-												);
+			).stream().map(ComputerDTOMapper::dtoDatabaseToComputer).collect(Collectors.toList());
 	}
 	
 	public Optional<Computer> getByID(long id) {
-		return computerRepository.findById(id);
+		return Optional.ofNullable(ComputerDTOMapper.dtoDatabaseToComputer(computerRepository.findById(id)));
 	}
 	
 	public boolean exists(long id) {
@@ -57,7 +61,7 @@ public class ComputerService {
 	
 	@Transactional
 	public long add(Computer computer) {
-		return computerRepository.save(computer).getId();
+		return computerRepository.save(ComputerDTOMapper.computerToDTODatabase(computer)).getId();
 	}
 	
 	public void updateName(Computer computer, String name) {
@@ -65,7 +69,7 @@ public class ComputerService {
 	}
 	
 	public void updateCompany(Computer computer, Company company) {
-		computerRepository.updateCompany(computer.getId(), company);
+		computerRepository.updateCompany(computer.getId(), CompanyDTOMapper.companyToDTODatabase(company));
 	}
 	
 	public void updateIntroduced(Computer computer, LocalDate introduced) {
@@ -77,11 +81,11 @@ public class ComputerService {
 	}
 	
 	public void updateAllParameters(Computer computer) {
-		computerRepository.save(computer);
+		computerRepository.save(ComputerDTOMapper.computerToDTODatabase(computer));
 	}
 	
-	public void delete(long computerID) {
-		computerRepository.deleteById(computerID);
+	public long delete(List<Long> id_list) {
+		return computerRepository.deleteByIdIn(id_list);
 	}
 	
 }

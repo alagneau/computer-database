@@ -7,10 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.excilys.formation.dto.mapper.ComputerDTOMapper;
 import com.excilys.formation.dto.model.ComputerDTOViewDashboard;
-import com.excilys.formation.exception.ArgumentException;
-import com.excilys.formation.model.Computer;
 import com.excilys.formation.model.ListPage;
 
 @Component
@@ -26,32 +23,32 @@ public class DashboardParameters {
 	}
 	
 	public void setPageIndex(int pageIndex) {
-		listPage.changePage(pageIndex);
+		listPage.setPageIndex(pageIndex);
 	}
 	
 	public void setNumberOfValues(int numberOfValues) {
-		listPage.changeNumberOfValues(numberOfValues);
+		listPage.setNumberOfValues(numberOfValues);
 	}
 	
 	public void setSearchValue(String search) {
-		listPage.changeSearchValue(search);
+		listPage.setSearchValue(search);
 	}
-	
-	public void setValues(List<Computer> values) throws ArgumentException {
+	/*
+	public void setValues(List<ComputerDatabaseDTO> values) throws ArgumentException {
 		listComputers = new ArrayList<>();
-		for (Computer computer : values) {
+		for (ComputerDatabaseDTO computer : values) {
 			ComputerDTOViewDashboard computerDTO;
 			computerDTO = ComputerDTOMapper.computerToDTOViewDashboard(computer);
 			listComputers.add(computerDTO);
 		}
-	}
+	}*/
 	
 	public void setMaxComputers(long value) {
 		listPage.setMaxComputers(value);
 	}
 	
 	public void setOrderByValue(ListPage.OrderByValues value) {
-		listPage.changeOrderByValue(value);
+		listPage.setOrderByValue(value);
 	}
 	
 	public ListPage getPage() {

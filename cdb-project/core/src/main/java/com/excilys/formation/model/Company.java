@@ -28,7 +28,7 @@ public class Company {
 		return name;
 	}
 
-	public long getID() {
+	public long getId() {
 		return id;
 	}
 

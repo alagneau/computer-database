@@ -73,7 +73,7 @@ public class ListPage implements Serializable {
 		return (index - 1) * numberOfValues;
 	}
 
-	public void changePage(int pageIndex) {
+	public void setPageIndex(int pageIndex) {
 		if (pageIndex > 0) {
 			if (pageIndex > maxPageValue) {
 				index = 1;
@@ -85,7 +85,7 @@ public class ListPage implements Serializable {
 		}
 	}
 
-	public void changeNumberOfValues(int numberOfValues) {
+	public void setNumberOfValues(int numberOfValues) {
 		if (numberOfValues > 0) {
 			int offset = getOffset();
 			this.numberOfValues = numberOfValues;
@@ -99,7 +99,7 @@ public class ListPage implements Serializable {
 		}
 	}
 
-	public void changeSearchValue(String searchValue) {
+	public void setSearchValue(String searchValue) {
 		if (searchValue != null) {
 			if (searchValue != this.searchValue) {
 				index = 1;
@@ -109,8 +109,8 @@ public class ListPage implements Serializable {
 		}
 	}
 
-	public void changeOrderByValue(OrderByValues newOrder) {
-		changePage(1);
+	public void setOrderByValue(OrderByValues newOrder) {
+		setPageIndex(1);
 		if (this.orderByValue == newOrder) {
 			orderByDirection = (orderByDirection == Direction.ASC) ? Direction.DESC
 					: Direction.ASC;
@@ -118,6 +118,11 @@ public class ListPage implements Serializable {
 			this.orderByValue = newOrder;
 			this.orderByDirection = Direction.ASC;
 		}
+	}
+
+	public void setOrderByDirection(Direction direction) {
+		setPageIndex(1);
+		this.orderByDirection = direction;
 	}
 
 	public void setMaxComputers(long maxComputers) {
@@ -139,6 +144,11 @@ public class ListPage implements Serializable {
 
 		public ListPageBuilder numberOfValues(int numberOfValues) {
 			this.numberOfValues = numberOfValues;
+			return this;
+		}
+		
+		public ListPageBuilder searchValue(String searchValue) {
+			this.searchValue = searchValue;
 			return this;
 		}
 

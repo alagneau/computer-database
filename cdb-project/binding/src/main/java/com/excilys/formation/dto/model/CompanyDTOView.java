@@ -3,7 +3,7 @@ package com.excilys.formation.dto.model;
 import com.excilys.formation.dto.validator.CompanyDTOValidator;
 import com.excilys.formation.exception.ArgumentException;
 
-public class CompanyDTOViewAdd {
+public class CompanyDTOView {
 	public String id, name;
 	
 	public void validate() throws ArgumentException {

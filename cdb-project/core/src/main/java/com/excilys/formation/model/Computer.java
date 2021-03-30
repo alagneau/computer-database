@@ -66,6 +66,10 @@ public class Computer {
 			return null;
 		}
 	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
 	
 	@Override
 	public String toString() {

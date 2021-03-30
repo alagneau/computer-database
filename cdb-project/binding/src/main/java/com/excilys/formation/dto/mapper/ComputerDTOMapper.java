@@ -3,6 +3,8 @@ package com.excilys.formation.dto.mapper;
 import static com.excilys.formation.constants.GlobalConstants.localDateToString;
 import static com.excilys.formation.constants.GlobalConstants.stringToLocalDate;
 
+import com.excilys.formation.dto.model.CompanyDTODatabase;
+import com.excilys.formation.dto.model.ComputerDTODatabase;
 import com.excilys.formation.dto.model.ComputerDTOViewAdd;
 import com.excilys.formation.dto.model.ComputerDTOViewDashboard;
 import com.excilys.formation.dto.model.ComputerDTOViewEdit;
@@ -11,9 +13,9 @@ import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 
 public class ComputerDTOMapper {
-	private ComputerDTOMapper() {
-		
-	}
+	
+	
+	private ComputerDTOMapper() { }
 	
 	public static ComputerDTOViewDashboard computerToDTOViewDashboard(Computer computer) {
 		ComputerDTOViewDashboard computerDTO = new ComputerDTOViewDashboard();
@@ -41,7 +43,7 @@ public class ComputerDTOMapper {
 		computerDTO.introduced = localDateToString(computer.getIntroduced());
 		computerDTO.discontinued = localDateToString(computer.getDiscontinued());
 		if (computer.getCompany() != null) {
-			computerDTO.companyID = String.valueOf(computer.getCompany().getID());
+			computerDTO.companyId = String.valueOf(computer.getCompany().getId());
 		}
 		
 		return computerDTO;
@@ -50,7 +52,7 @@ public class ComputerDTOMapper {
 	public static Computer dtoViewAddToComputer(ComputerDTOViewAdd computerDTO) throws ArgumentException {
 		computerDTO.validate();
 		Company company = null;
-		long companyId = Long.parseLong(computerDTO.companyID);
+		long companyId = Long.parseLong(computerDTO.companyId);
 		if (companyId > 0) {
 			company = new Company.CompanyBuilder().id(companyId).build();
 		}
@@ -70,7 +72,7 @@ public class ComputerDTOMapper {
 		computerDTO.introduced = localDateToString(computer.getIntroduced());
 		computerDTO.discontinued = localDateToString(computer.getDiscontinued());
 		if (computer.getCompany() != null) {
-			computerDTO.companyID = String.valueOf(computer.getCompany().getID());
+			computerDTO.companyID = String.valueOf(computer.getCompany().getId());
 		}
 		
 		return computerDTO;
@@ -90,5 +92,35 @@ public class ComputerDTOMapper {
 						.discontinued(stringToLocalDate(computerDTO.discontinued))
 						.company(company)
 						.build();
+	}
+	
+	public static ComputerDTODatabase computerToDTODatabase(Computer computer) {
+		ComputerDTODatabase computerDTO = new ComputerDTODatabase();
+		computerDTO.setId(computer.getId());
+		computerDTO.setName(computer.getName());
+		computerDTO.setIntroduced(computer.getIntroduced());
+		computerDTO.setDiscontinued(computer.getDiscontinued());
+		computerDTO.setCompany(CompanyDTOMapper.companyToDTODatabase(computer.getCompany()));
+		
+		return computerDTO;
+	}
+	
+	public static Computer dtoDatabaseToComputer(ComputerDTODatabase computerDTO) {
+		try {
+			CompanyDTODatabase companyDTO = computerDTO.getCompany();
+			Company company = null;
+			if (companyDTO != null) {
+				company = CompanyDTOMapper.dtoDatabaseToCompany(computerDTO.getCompany());
+			}
+			
+			return new Computer.ComputerBuilder(computerDTO.getName())
+						.id(computerDTO.getId())
+						.introduced(computerDTO.getIntroduced())
+						.discontinued(computerDTO.getDiscontinued())
+						.company(company)
+						.build();
+		} catch (ArgumentException exception) {
+			return null;
+		}
 	}
 }

@@ -3,6 +3,7 @@ package com.excilys.formation.console;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.exception.DatabaseAccessException;
 import com.excilys.formation.exception.ReadDataException;
+import com.excilys.formation.logger.CDBLogger;
 import com.excilys.formation.model.Company;
 import com.excilys.formation.model.Computer;
 import com.excilys.formation.model.ListPage;
@@ -34,6 +36,7 @@ public class View {
 	private Computer computerDetails = null;
 	private Company companyDetails = null;
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+	private CDBLogger logger = new CDBLogger(View.class);
 
 	private enum Page {
 		HOME("0"), COMPUTERS("1"), COMPANIES("2"), DETAIL("3"), CREATE("4"), UPDATE("5"), DELETE_COMPUTER("6"),
@@ -121,7 +124,7 @@ public class View {
 	}
 
 	private int pageHome(String query) {
-		listPage.changePage(DEFAULT_PAGE_INDEX);
+		listPage.setPageIndex(DEFAULT_PAGE_INDEX);
 		sousMenu = DEFAULT_PAGE_MENU;
 		computerDetails = null;
 		if (query.equals("q") || query.equals("Q")) {
@@ -158,11 +161,11 @@ public class View {
 		}
 		switch (query) {
 			case "P":
-				listPage.changePage(listPage.getIndex() - 1);
+				listPage.setPageIndex(listPage.getIndex() - 1);
 				System.out.println("Infos précedentes\n");
 				break;
 			case "N":
-				listPage.changePage(listPage.getIndex() + 1);
+				listPage.setPageIndex(listPage.getIndex() + 1);
 				System.out.println("Infos suivantes\n");
 				break;
 			case "A":
@@ -241,7 +244,9 @@ public class View {
 		if (computerDetails != null) {
 			String format = "%-40s%-40s%-20s%-20s%n";
 			System.out.printf(format, "Ordinateur", "Entreprise", "Date d'arrivée", "Date de fin");
-			System.out.printf(format, computerDetails.getName(), computerDetails.getCompanyName(),
+			String companyName = computerDetails.getCompany() != null ? computerDetails.getCompany().getName() : null;
+			
+			System.out.printf(format, computerDetails.getName(), companyName,
 					computerDetails.getIntroduced(), computerDetails.getDiscontinued());
 			System.out.println("");
 		}
@@ -251,7 +256,7 @@ public class View {
 		if (companyDetails != null) {
 			String format = "%-40s%-20s%n";
 			System.out.printf(format, "id", "Company");
-			System.out.printf(format, companyDetails.getID(), companyDetails.getName());
+			System.out.printf(format, companyDetails.getId(), companyDetails.getName());
 			System.out.println("");
 		}
 	}
@@ -270,9 +275,9 @@ public class View {
 				break;
 			}
 			try {
-				computerDetails = new Computer.ComputerBuilder(query).build();
+				computerDetails = new Computer.ComputerBuilder("").build();
 			} catch (ArgumentException exception) {
-				System.out.println(exception.getMessage());
+				logger.error(exception.getMessage());
 			}
 			sousMenu = 1;
 			break;
@@ -289,8 +294,7 @@ public class View {
 				try {
 					if (controller.companyExists(id)) {
 						try {
-							computerDetails = new Computer.ComputerBuilder(computerDetails.getName())
-									.company(new Company.CompanyBuilder().id(id).build()).build();
+							computerDetails.setCompany(new Company.CompanyBuilder().id(id).name("").build());
 							if ((id = controller.addComputer(computerDetails)) > 0) {
 								computerDetails = controller.getComputerByID(id).get();
 								sousMenu = 2;
@@ -412,7 +416,7 @@ public class View {
 				break;
 			default:
 				try {
-					controller.changeComputerCompany(computerDetails, (long) queryToInt(query));
+					controller.changeComputerCompany(computerDetails, controller.getCompanyByID((long) queryToInt(query)).get());
 					computerDetails = controller.getComputerByID(computerDetails.getId()).get();
 					sousMenu = 6;
 				} catch (DatabaseAccessException | ArgumentException | NoSuchElementException exception) {
@@ -526,7 +530,7 @@ public class View {
 				break;
 			case "S":
 				try {
-					controller.deleteComputer(computerDetails.getId());
+					controller.deleteComputer(Arrays.asList(computerDetails.getId()));
 					sousMenu = 2;
 				} catch (DatabaseAccessException exception) {
 					System.out.println("Il y a eu une erreur à la suppression de l'ordinateur..");

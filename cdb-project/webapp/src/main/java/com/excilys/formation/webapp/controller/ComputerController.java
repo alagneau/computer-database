@@ -1,143 +1,87 @@
 package com.excilys.formation.webapp.controller;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.excilys.formation.dto.mapper.CompanyDTOMapper;
 import com.excilys.formation.dto.mapper.ComputerDTOMapper;
 import com.excilys.formation.dto.model.ComputerDTOViewAdd;
+import com.excilys.formation.dto.model.ComputerDTOViewDashboard;
 import com.excilys.formation.dto.model.ComputerDTOViewEdit;
 import com.excilys.formation.exception.ArgumentException;
-import com.excilys.formation.logger.CDBLogger;
 import com.excilys.formation.model.ListPage;
-import com.excilys.formation.service.CompanyService;
 import com.excilys.formation.service.ComputerService;
-import com.excilys.formation.webapp.controller.data.AddComputerParameters;
-import com.excilys.formation.webapp.controller.data.DashboardParameters;
-import com.excilys.formation.webapp.controller.data.EditComputerParameters;
 
-@Controller
+@RestController
+@RequestMapping("/computers")
 public class ComputerController {
-	private static CDBLogger logger = new CDBLogger(ComputerController.class);
 
 	ComputerService computerService;
-	CompanyService companyService;
-	DashboardParameters dashboardParams;
-	EditComputerParameters editComputerParameters;
-	AddComputerParameters addComputerParameters;
 
-	private ComputerController(ComputerService computerService, CompanyService companyService,
-			DashboardParameters dashboardParams, AddComputerParameters addComputerParameters,
-			EditComputerParameters editComputerParameters) {
+	private ComputerController(ComputerService computerService) {
 		this.computerService = computerService;
-		this.companyService = companyService;
-		this.dashboardParams = dashboardParams;
-		this.editComputerParameters = editComputerParameters;
-		this.addComputerParameters = addComputerParameters;
 	}
 
-	@GetMapping("/dashboard")
-	public ModelAndView dashboardGet(@RequestParam(required = false) Integer pageIndex,
-			@RequestParam(required = false) Integer numberOfValues, @RequestParam(required = false) String search,
-			@RequestParam(required = false) ListPage.OrderByValues orderByValue) {
-		readDashboardParams(pageIndex, numberOfValues, search, orderByValue);
-		getDashboardValuesFromDAO();
+	@GetMapping()
+	public ResponseEntity<List<ComputerDTOViewDashboard>> getPage(Integer pageIndex, Integer numberOfValues, String search) {
+		ListPage listPage = new ListPage.ListPageBuilder().index(pageIndex).numberOfValues(numberOfValues)
+				.searchValue(search).build();
 
-		return dashboardParams.getModelAndView();
+		return new ResponseEntity<> (computerService.getRangeServlet(listPage).stream().map(ComputerDTOMapper::computerToDTOViewDashboard).collect(Collectors.toList()), HttpStatus.OK);
 	}
-
-	private void getDashboardValuesFromDAO() {
-		dashboardParams.setMaxComputers(computerService.filterAndCount(dashboardParams.getSearchValue()));
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<ComputerDTOViewDashboard> getOne(@PathVariable("id") long id) {
 		try {
-			dashboardParams.setValues(computerService.getRangeServlet(dashboardParams.getPage()));
-		} catch (ArgumentException exception) {
-			logger.info(exception.getMessage());
+			return new ResponseEntity<> (ComputerDTOMapper.computerToDTOViewDashboard(computerService.getByID(id).orElseThrow(Exception::new)), HttpStatus.OK);
+		} catch (Exception exception) {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping("/count")
+	public ResponseEntity<Long> getCount() {
+		return new ResponseEntity<> (computerService.count(), HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/{id_list}")
+	public ResponseEntity<Long> delete(@PathVariable("id_list") List<Long> id_list) {
+
+		long result = computerService.delete(id_list);
+		if (result > 0) {
+			return new ResponseEntity<Long>(result, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Long>(HttpStatus.NO_CONTENT);
 		}
 	}
 
-	private void readDashboardParams(Integer pageIndex, Integer numberOfValues, String search,
-			ListPage.OrderByValues orderByValue) {
-		if (pageIndex != null) {
-			dashboardParams.setPageIndex(pageIndex);
-		}
-		if (numberOfValues != null) {
-			dashboardParams.setNumberOfValues(numberOfValues);
-		}
-		if (search != null) {
-			dashboardParams.setSearchValue(search);
-		}
-		if (orderByValue != null) {
-			dashboardParams.setOrderByValue(orderByValue);
-		}
-	}
-
-	@PostMapping("/dashboard")
-	public ModelAndView dashboardPost(@RequestParam(required = false) String selection) {
-		if (selection != null) {
-			Arrays.asList(selection.split(",")).stream()
-				.map(value -> Integer.parseInt(value))
-				.forEach(value -> {
-					computerService.delete(value);
-				});
-		}
-		getDashboardValuesFromDAO();
-
-		return dashboardParams.getModelAndView();
-	}
-
-	@GetMapping("/editComputer")
-	public ModelAndView editComputerGet(@RequestParam(required = false) Integer computerId) {
-		if (computerId != null) {
-			editComputerParameters.setComputer(
-					ComputerDTOMapper.computerToDTOViewEdit(computerService.getByID(computerId).orElse(null)));
-		}
-		editComputerParameters.setCompanyList(CompanyDTOMapper.companyListToDTOListViewAdd(companyService.getAll()));
-		return editComputerParameters.getModelAndView();
-	}
-
-	@PostMapping("/editComputer")
-	public ModelAndView editComputerPost(String computerId, String computerName, String introduced, String discontinued,
-			String companyId) {
-		ComputerDTOViewEdit computerDTO = new ComputerDTOViewEdit();
-		computerDTO.id = computerId;
-		computerDTO.name = computerName;
-		computerDTO.introduced = introduced;
-		computerDTO.discontinued = discontinued;
-		computerDTO.companyID = companyId;
-		editComputerParameters.setComputer(computerDTO);
+	@PostMapping()
+	public ResponseEntity<Boolean> edit(@RequestBody ComputerDTOViewEdit computerDTO) {
 		try {
 			computerService.updateAllParameters(ComputerDTOMapper.dtoViewEditToComputer(computerDTO));
+			return new ResponseEntity<> (true, HttpStatus.OK);
 		} catch (ArgumentException exception) {
-			logger.info(exception.getMessage());
+			return new ResponseEntity<> (false, HttpStatus.BAD_REQUEST);
 		}
-		return editComputerParameters.getModelAndView();
 	}
 
-	@GetMapping("/addComputer")
-	public ModelAndView addComputerGet() {
-		addComputerParameters.setCompanyList(CompanyDTOMapper.companyListToDTOListViewAdd(companyService.getAll()));
-		return addComputerParameters.getModelAndView();
-	}
-
-	@PostMapping("/addComputer")
-	public ModelAndView addComputerPost(String computerId, String computerName, String introduced, String discontinued,
-			String companyId) {
-		ComputerDTOViewAdd computerDTO = new ComputerDTOViewAdd();
-		computerDTO.name = computerName;
-		computerDTO.introduced = introduced;
-		computerDTO.discontinued = discontinued;
-		computerDTO.companyID = companyId;
-		addComputerParameters.setComputer(computerDTO);
+	@PutMapping()
+	public ResponseEntity<Boolean> addComputerPost(@RequestBody ComputerDTOViewAdd computerDTO) {
 		try {
 			computerService.add(ComputerDTOMapper.dtoViewAddToComputer(computerDTO));
+			return new ResponseEntity<> (true, HttpStatus.OK);
 		} catch (ArgumentException exception) {
-			logger.info(exception.getMessage());
+			return new ResponseEntity<> (false, HttpStatus.BAD_REQUEST);
 		}
-		return addComputerParameters.getModelAndView();
 	}
 }
