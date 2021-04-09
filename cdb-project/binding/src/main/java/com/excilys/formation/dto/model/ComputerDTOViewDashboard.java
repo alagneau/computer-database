@@ -14,7 +14,7 @@ public class ComputerDTOViewDashboard {
 		CompanyDTOValidator.validName(companyName);
 	}
 	
-	public String getID() {
+	public String getId() {
 		return id;
 	}
 	

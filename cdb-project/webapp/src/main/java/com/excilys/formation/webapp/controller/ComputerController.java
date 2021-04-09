@@ -34,7 +34,13 @@ public class ComputerController {
 
 	@GetMapping()
 	public ResponseEntity<List<ComputerDTOViewDashboard>> getPage(Integer pageIndex, Integer numberOfValues, String search) {
-		ListPage listPage = new ListPage.ListPageBuilder().index(pageIndex).numberOfValues(numberOfValues)
+		System.out.println("pageIndex :" + pageIndex + ":");
+		System.out.println("numberOfValues :" + numberOfValues + ":");
+		System.out.println("search :" + search + ":");
+		ListPage listPage = new ListPage
+				.ListPageBuilder()
+				.index(pageIndex)
+				.numberOfValues(numberOfValues)
 				.searchValue(search).build();
 
 		return new ResponseEntity<> (computerService.getRangeServlet(listPage).stream().map(ComputerDTOMapper::computerToDTOViewDashboard).collect(Collectors.toList()), HttpStatus.OK);

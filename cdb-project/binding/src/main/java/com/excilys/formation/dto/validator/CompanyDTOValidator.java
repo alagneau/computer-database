@@ -7,9 +7,9 @@ public class CompanyDTOValidator {
 	}
 
 	public static void validName(String name) throws ArgumentException {
-		if (name == null || name.isEmpty()) {
-			throw new ArgumentException("Not a valid company name : '" + name + "'");
-		}
+//		if (name == null || name.isEmpty()) {
+//			throw new ArgumentException("Not a valid company name : '" + name + "'");
+//		}
 	}
 
 	public static void validID(String id) throws ArgumentException {

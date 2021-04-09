@@ -3,17 +3,28 @@ package com.excilys.formation.console;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.cxf.common.util.Base64Utility;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.excilys.formation.dto.mapper.ComputerDTOMapper;
+import com.excilys.formation.dto.model.ComputerDTOViewDashboard;
 import com.excilys.formation.exception.AddDataException;
 import com.excilys.formation.exception.ArgumentException;
 import com.excilys.formation.exception.DatabaseAccessException;
@@ -29,6 +40,8 @@ public class View {
 	private static final int DEFAULT_NUMBER_OF_VALUES = 10;
 	private static final int DEFAULT_PAGE_INDEX = 1;
 	private static final int DEFAULT_PAGE_MENU = 0;
+	private static final String BASE_URL = "http://localhost:8080/webapp";
+	
 	@Autowired
 	private Controller controller;
 	private int sousMenu = 0;
@@ -37,6 +50,8 @@ public class View {
 	private Company companyDetails = null;
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 	private CDBLogger logger = new CDBLogger(View.class);
+//	private Client client;
+	private WebClient client;
 
 	private enum Page {
 		HOME("0"), COMPUTERS("1"), COMPANIES("2"), DETAIL("3"), CREATE("4"), UPDATE("5"), DELETE_COMPUTER("6"),
@@ -60,6 +75,15 @@ public class View {
 
 	public View() {
 		System.out.println("Bienvenue sur MyComputerDatabase.com !\n\n");
+		logger.info("CREATION CLIENT");
+//		client = Client.create(new DefaultClientConfig());
+		List<Object> providers = new ArrayList<>();
+		providers.add(new JacksonJaxbJsonProvider());
+		client = WebClient.create(BASE_URL, providers);
+		logger.info("CONNECTION LOGGIN");
+//		client.addFilter(new HTTPBasicAuthFilter("user", "123456"));
+		client.header("Authorization", "Basic " + Base64Utility.encode("admin:123456".getBytes()));
+		logger.info("CONNECTION TERMINEE");
 		displayPage();
 	}
 
@@ -180,11 +204,55 @@ public class View {
 	private void printAllComputers() {
 		List<Computer> computers = null;
 
-		try {
-			computers = controller.getComputerPage(listPage);
-		} catch (ReadDataException | ArgumentException exception) {
-			System.out.println(exception.getMessage());
+//	try {
+//		computers = controller.getComputerPage(listPage);
+		Map<String, Object> params = new HashMap<>();
+		params.put("pageIndex", listPage.getIndex());
+		params.put("numberOfValues", listPage.getNumberOfValues());
+		params.put("search", listPage.getSearchValue());
+		
+		logger.info("DEMANDE DE REQUETE");
+		WebClient request = client.resetQuery().replacePath("/computers");
+		for (Entry<String, Object> entry : params.entrySet()) {
+			request.query(entry.getKey(), entry.getValue());
 		}
+		
+		System.out.println("REQUETE : " + request.getCurrentURI());
+		
+		List<ComputerDTOViewDashboard> values = request.accept(MediaType.APPLICATION_JSON).get(new GenericType<List<ComputerDTOViewDashboard>>() {});
+				
+		computers = values.stream().map(c -> {
+			try {
+				return ComputerDTOMapper.dtoViewDashboardToComputer(c);
+			} catch (ArgumentException exception) {
+				System.out.println(exception.getMessage());
+				return null;
+			}
+		}).collect(Collectors.toList());
+		
+//		List<Computer> computers = null;
+//
+//		logger.info("DEMANDE DE REQUETE");
+//		WebResource resource = client.resource(BASE_URL).path("/computers");
+//
+//		resource.queryParam("pageIndex", "1");
+//		resource.queryParam("numberOfValues", "10");
+//		resource.queryParam("search", "");
+//
+//		ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+//		List<ComputerDTOViewDashboard> values = response.getEntity(new GenericType<List<ComputerDTOViewDashboard>>() {});
+//		
+//		computers = values.stream().map(c -> {
+//			try {
+//				return ComputerDTOMapper.dtoViewDashboardToComputer(c);
+//			} catch (ArgumentException exception) {
+//				System.out.println(exception.getMessage());
+//				return null;
+//			}
+//		}).collect(Collectors.toList());
+//		} catch (ReadDataException | ArgumentException exception) {
+//			System.out.println(exception.getMessage());
+//		}
 
 		System.out.println(Computer.HEADER);
 

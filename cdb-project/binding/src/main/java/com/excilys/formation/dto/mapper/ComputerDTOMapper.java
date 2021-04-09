@@ -29,8 +29,15 @@ public class ComputerDTOMapper {
 	}
 
 	public static Computer dtoViewDashboardToComputer(ComputerDTOViewDashboard computerDTO) throws ArgumentException {
+		if ("none".equals(computerDTO.getIntroduced())) {
+			computerDTO.introduced = "";
+		}
+		if ("none".equals(computerDTO.getDiscontinued())) {
+			computerDTO.discontinued = "";
+		}
 		computerDTO.validate();
 		return new Computer.ComputerBuilder(computerDTO.name)
+						.id(Long.parseLong(computerDTO.getId()))
 						.introduced(stringToLocalDate(computerDTO.introduced))
 						.discontinued(stringToLocalDate(computerDTO.discontinued))
 						.company(new Company.CompanyBuilder().name(computerDTO.companyName).build())
